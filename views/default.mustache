@@ -1,0 +1,131 @@
+<!-- DEFAULT THEME -->
+<html>
+<head>
+	<script src="/javascripts/jquery.min.js" type="text/javascript"></script>
+	<script src="/javascripts/foundation.js" type="text/javascript"></script>
+	<script src="/javascripts/app.js" type="text/javascript"></script>
+	<script src="/javascripts/modernizr.foundation.js" type="text/javascript"></script>
+	<link rel="stylesheet" type="text/css" href="/stylesheets/foundation.css">
+	<link rel="stylesheet" type="text/css" href="/stylesheets/app.css">
+
+	<title> {{pagetitle}} </title>
+
+</head>
+<body>
+<!-- window reveal for foundation, see controller/base.js -->
+	{{#reveal}}
+		<div id="modale" class="reveal-modal">
+       			<h1>Titolo</h1>
+       			<p>Testo contenuto nella finestra modale</p>
+       			<a class="close-reveal-modal">x</a>
+    		</div>
+	{{/reveal}}
+
+	{{#header }}
+		<ul class="nav-bar">
+			{{#menu}}
+        			<li><a href="{{path}}" class="main"> {{item}} </a></li>
+			{{/menu}}
+			{{#connected}}
+        			<li><a href="{{path}}" class="main"> {{item}} </a></li>
+			{{/connected}}
+			{{#notconnected}}
+        			<li><a href="{{path}}" class="main"> {{item}} </a></li>
+			{{/notconnected}}
+
+		</ul>
+	{{/header }}
+
+
+	<div class="container">
+
+		<div class="row">
+<!-- LEFT COLUMNS -->
+			<div class="six columns">
+				<h1>{{pagetitle}}</h1>
+
+<!-- THE FORMS -->
+			{{#form}}
+				
+				{{#user}}
+					<form method="post" action="/{{type}}" class="nice">
+			    	 		<input type="text" name="name" class="input-text" placeholder="Nome" value="{{name}}"/>
+						{{#registration}}
+	     					<input type="text" name="email" class="input-text" placeholder="Email" value="{{email}}"/>
+						{{/registration}}
+						{{#restricted}}
+	     					<input type="text" name="role" class="input-text" placeholder="Role" value="{{role}}"/>
+						{{/restricted}}
+	     					<input type="password" name="password" class="input-text" placeholder="Password"/>
+	     					<input type="submit" value="Submit" class="small radius button"/>
+					</form>
+				{{/user}}
+
+				{{#post}}
+					<form method="post" action="/posts" class="nice">
+						<input type="hidden" name="{{type}}" value="{{type}}" />
+						<input type="text" name="title" class="input-text" placeholder="Title" value="{{title}}"/>
+						<textarea name="content" class="input-text" placeholder="Content"/>{{content}}</textarea>
+						<input type="submit" value="Submit" class="small radius button"/>
+					</form>
+				{{/post}}
+
+				{{#themes}}
+					<form method="post" action="/themes" class="nice">
+					     	<input type="text" name="path" class="input-text" placeholder="Path" value="{{path}}"/>
+					     	<input type="text" name="record" class="input-text" placeholder="Record" value="{{record}}"/>
+					     	<input type="submit" value="Submit" class="small radius button"/>
+					</form>
+
+				{{/themes}}
+
+
+			{{/form}}
+
+			{{#data}}
+				{{#user}}
+					{{name}} -
+					{{email}} -
+					{{password}} | 
+					<a href="/user/edit/{{name}}">edit</a><br>
+				{{/user}}
+
+				{{#post}}
+					Title: {{title}} - Date: {{date}}<br>
+					Content: {{content}}
+					<a href="/posts/edit/{{slug}}">edit</a><br>
+					<a href="/archive/2">2</a><br>
+				{{/post}}
+
+				{{#themes}}
+					{{path}} : {{record}}
+					{{connected}} : {{record}} 
+				{{/themes}}
+
+			{{/data}}
+
+			{{message}}
+
+			</div>
+
+<!-- RIGHT COLOUMS / SIDEBAR -->
+{{#sidebar}}
+			<div class="six columns">
+				<h1>SIDEBAR</h1>
+
+				{{#reveal}}
+	    				<a href="#" data-reveal-id="modale">Clicca qui per vedere la finestra</a>
+				{{/reveal}}
+			</div>
+		</div>
+{{/sidebar}}
+	</div>
+	
+
+<!-- FOOTER -->
+	<!-- ISSUE:4-->
+	{{#footer}}
+		<center>FOOTER QUI</center>
+	{{/footer}}
+</body>
+</html>

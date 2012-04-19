@@ -1,0 +1,16 @@
+{
+  	"name":"MuContent",
+	"description":"A multisite, modulare and scalable CMS",
+  	"version":"0.0.1",
+  	"author": {
+    		"name": "Andrea Di Mario",
+    		"email": "anddimario@gmail.com"
+  	},
+  	"dependencies":{
+    		"express":"2.5.8",
+    		"mongodb":"0.9.9-7",
+    		"validator":"0.4.5",
+    		"stache":"0.1.0", 
+    		"connect-mongodb":"1.1.3"
+  	}
+}

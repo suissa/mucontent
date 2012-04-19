@@ -1,0 +1,87 @@
+/* MODELS FOR USER
+*/
+
+var mongodb = require('mongodb');
+var utils = require('../lib/utils');
+
+var ModelsUser = function(database) {
+	this.database = database;
+	this.serverMongo = new mongodb.Server('127.0.0.1', 27017, {auto_reconnect: true});
+  	this.db = new mongodb.Db(this.database, this.serverMongo, {});
+}
+
+ModelsUser.prototype.find = function(value, callback) {
+	var self = this;
+	this.db.open( function (error, client) {
+		if (error) throw error;
+		collection = new mongodb.Collection(client, 'user');
+		collection.find(value).toArray( function (err, objects) {
+			if (err) {
+				utils.quicklog(err.message);
+			} else {
+				callback(objects);
+			}
+			self.serverMongo.close();
+		});
+	});
+};
+
+ModelsUser.prototype.login = function(value, callback) {
+	var self = this;
+	this.db.open( function (error, client) {
+		if (error) throw error;
+		collection = new mongodb.Collection(client, 'user');
+		collection.find({name: value.name, password: value.password}).toArray( function (err, objects) {
+			if (err) {
+				utils.quicklog(err.message);
+			} else {
+				callback(objects);
+			}
+			self.serverMongo.close();
+		});
+	});
+};
+
+ModelsUser.prototype.insert = function (value, callback) {
+	var self = this;
+	this.db.open( function (error, client) {
+		if (error) throw error;
+		collection = new mongodb.Collection(client, 'user');
+		
+
+		collection.insert({
+			name: value.name, 
+			email: value.email, 
+			password: value.password
+			}, {safe: true}, function (err, objects) {
+				if (err) {
+					utils.quicklog(err.message);
+				} else {
+					callback(objects);
+				}
+				self.serverMongo.close();
+		});
+	});
+};
+
+ModelsUser.prototype.update = function (value, callback) {
+	var self = this;
+	this.db.open( function (error, client) {
+		if (error) throw error;
+		collection = new mongodb.Collection(client, 'user');
+// with findandmodify we get back the modify object
+		collection.findAndModify({name: value.name}, [['_id', 'asc']], {$set: {
+			email: value.email, 
+			password: value.password
+			} }, {new:true}, function (err, objects) {
+				if (err) {
+					utils.quicklog(err.message);
+				} else {
+					callback(objects);
+				}
+				self.serverMongo.close();
+		});
+	});
+};
+
+module.exports = ModelsUser;
