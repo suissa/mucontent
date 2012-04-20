@@ -14,18 +14,19 @@ var Db = require('mongodb').Db
 // EXPORT EXPRESS CONFIGURATION SETTINGS
 Config = function(app, express)	{
 	app.configure(function () {
+		app.engine('.mustache', stache);
 		app.set('view engine', 'mustache');
-		app.register('.mustache', stache);
+// fix for express 3
 		app.set('view options', {
 			  layout: false
 		});
 		app.use(express.methodOverride());
 //		app.use(express.logger()); manda su stdout: http://stackoverflow.com/questions/5489815/logging-in-express-js-to-a-output-file
 		app.use(express.bodyParser());
-		app.use(express.cookieParser());
+		app.use(express.cookieParser("18f6a9847c7dc216e9aa0d5bf8ab639a"));
 		app.use(express.session({
     			cookie: {maxAge: 60000 * 20}, // 20 minutes
- 			secret: 'foo',
+// 			secret: 'foo',
 			store: new mongoStore({db: db})
 			})
 		);

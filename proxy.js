@@ -10,7 +10,7 @@ var cache = require('./lib/cache');
 var Server = function () {};
 
 Server.prototype.start = function () {
-	http.createServer(this.proxy).listen(80, '127.0.0.1');
+	http.createServer(this.proxy).listen(80);
 	utils.quicklog("Start server");
 }
 

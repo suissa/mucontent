@@ -60,6 +60,7 @@ setInterval(function () {
 		cache.put('client_list', objects);
 	});
 }, 10000);
+
 // set che balancer variable on cache
 cache.put('next_client', 0);
 var balancer = {};

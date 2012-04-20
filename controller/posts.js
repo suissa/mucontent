@@ -18,15 +18,15 @@ Validator.prototype.getErrors = function () {
 function route(app) {
 
 	app.get('/posts/:operation?', utils.restricted_module, utils.restricted, function (req, res) { 
-		var type;
-		if (req.params.operation) {
-			type = req.params.operation;
-		} else {
-			type = "new";
-		}
 		utils.rendering(req.headers.host, 'posts', req.session.connected, function callback(objects) {
 			var theme = objects.theme, layout = objects.layout;
-			layout.type = type;
+			var type;
+			if (req.params.operation) {
+				layout.type = req.params.operation;
+				layout.title = "ciao";
+			} else {
+				layout.type = "new";
+			}
 			res.render(theme, layout);
 		});
 	} );

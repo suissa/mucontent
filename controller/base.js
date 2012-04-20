@@ -54,8 +54,6 @@ function route(app) {
 				layout.record = req.body.record;
 				res.render(theme, layout);
 			});
-
-
 		} else {
 			var theme_insert = new ModelsBase(req.headers.host);
 			var value = { path: req.body.path, record: req.body.record };
