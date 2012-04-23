@@ -2,7 +2,6 @@
 */
 
 // REQUIREMENTS
-var stache = require('stache');
 // FOR SESSION IN MONGODB
 var Db = require('mongodb').Db
  Server = require('mongodb').Server
@@ -14,9 +13,9 @@ var Db = require('mongodb').Db
 // EXPORT EXPRESS CONFIGURATION SETTINGS
 Config = function(app, express)	{
 	app.configure(function () {
-		app.engine('.mustache', stache);
 		app.set('view engine', 'mustache');
 // fix for express 3
+		app.layout('.mustache', stache);
 		app.set('view options', {
 			  layout: false
 		});
