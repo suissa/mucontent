@@ -3,20 +3,20 @@
 
 // REQUIREMENTS
 var utils = require('./lib/utils');
-var express = require('express');
-var app = express.createServer();
+var connect = require('connect');
+var app = connect();
 // for caching layout
 var cache = require('./lib/cache');
 var health = require('./lib/health');
 var Config = require('./config');
 
-var configuration = new Config(app, express);
+var configuration = new Config(app);
 
 var fs = require('fs')
 // get all controller as a module (all function is route)
 fs.readdir(__dirname + '/controller', function (err, files) {
 	files.forEach(function(item) {
-		require('./controller/'+item).route(app);		
+		require('./controller/'+item).route();		
 	});
 });
 
@@ -50,7 +50,7 @@ domain.forEach( function (row) {
 });
 }, 15000);
 
-// INCLUDE CONTROLLER AND START APP
+// INCLUDE START APP
 app.listen(8080, '127.0.0.1');
 utils.quicklog("Start Application");
 

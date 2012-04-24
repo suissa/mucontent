@@ -1,6 +1,7 @@
 /* POST CONTROLLER
 */
 
+var router = require('route66');
 var ModelsPost = require('../models/posts.js');
 // REQUIRE CLASS TO MANAGE THE ERROR WITH ARRAY AND NOT CATCH
 var Validator = require('validator').Validator;
@@ -15,22 +16,21 @@ Validator.prototype.getErrors = function () {
     return this._errors;
 }
 
-function route(app) {
+function route() {
 
-	app.get('/posts/:operation?', utils.restricted_module, utils.restricted, function (req, res) { 
-		utils.rendering(req.headers.host, 'posts', req.session.connected, function callback(objects) {
-			var theme = objects.theme, layout = objects.layout;
-			var type;
-			if (req.params.operation) {
-				layout.type = req.params.operation;
-				layout.title = "ciao";
-			} else {
-				layout.type = "new";
-			}
-			res.render(theme, layout);
+	router.get('/posts/:operation?', utils.restricted_module, utils.restricted, function (req, res) { 
+		var data = {};
+		if (req.params.operation) {
+			data.type = req.params.operation,
+			data.title = 'ciao';
+		} else {
+			data.type = 'new';
+		}
+		utils.rendering(req.headers.host, 'posts', data, req.session.connected, function callback(layout) {
+			res.end(layout);
 		});
 	} );
-	app.post('/posts', utils.restricted_module, utils.restricted, function (req, res) { 
+	router.post('/posts', utils.restricted_module, utils.restricted, function (req, res) { 
 		var validator = new Validator();   
 		validator.check(req.body.title, 'title').notEmpty();
 		validator.check(req.body.content, 'post').notEmpty();
@@ -38,12 +38,11 @@ function route(app) {
                 var domain = cache.get('domain'), post_layout = {};
 		if (errors.length)
 		{
-			utils.rendering(req.headers.host, 'posts', req.session.connected, function callback(objects) {
-				var theme = objects.theme, layout = objects.layout;
-				layout.message = 'Required fields: ' + errors;
-				layout.title = req.body.title;
-				layout.content = req.body.content;
-				res.render(theme, layout);
+			var data = {message: 'Required fields: ' + errors,
+				title: req.body.title,
+				content: req.body.content};
+			utils.rendering(req.headers.host, 'posts', data, req.session.connected, function callback(layout) {
+				res.end(layout);
 			});
 		} else {
 			if (req.body.type == "new"){
@@ -58,11 +57,10 @@ function route(app) {
 					date: date
 				};
 				post_insert.insert(value, function callbacks(results) {
-					utils.rendering(req.headers.host, 'posts', req.session.connected, function callback(objects) {
-						var theme = objects.theme, layout = objects.layout;
-						layout.form = false;
-						layout.data = results;
-						res.render(theme, layout);
+					var data = {form: false,
+						data: results};
+					utils.rendering(req.headers.host, 'posts', data, req.session.connected, function callback(layout) {
+						res.end(layout);
 					});			
 				});			
 			} else if (req.body.type == "edit") {
@@ -71,7 +69,7 @@ function route(app) {
 		}
 	} );
 
-	app.get('/archive/:page?', function (req, res) {
+	router.get('/archive/:page?', function (req, res) {
 		var post_list = new ModelsPost(req.headers.host);
 		var value = {}, skip;
 		if (req.params.page == 1) {
@@ -82,11 +80,10 @@ function route(app) {
 // TODO: continue and see how paginator on view
 		var options = {skip: skip, limit: 5}
 		post_list.find(value, options, function callbacks(results) {
-			utils.rendering(req.headers.host, 'posts', req.session.connected, function callback(objects) {
-				var theme = objects.theme, layout = objects.layout;
-				layout.form = false;
-				layout.data = results;
-				res.render(theme, layout);
+			var data = { form: false,
+				data: results};
+			utils.rendering(req.headers.host, 'posts', data, req.session.connected, function callback(layout) {
+				res.end(layout);
 			});
 		}); 
 	} );

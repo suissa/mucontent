@@ -1,6 +1,7 @@
 /* BASE CONTROLLER FOR SIMPLE REQUEST
 */
 
+var router = require('route66');
 var ModelsBase = require('../models/base.js');
 // REQUIRE CLASS TO MANAGE THE ERROR WITH ARRAY AND NOT CATCH
 var Validator = require('validator').Validator;
@@ -8,76 +9,70 @@ var Validator = require('validator').Validator;
 var cache = require('../lib/cache');
 var utils = require('../lib/utils');
 
-function route(app) {
+function route() {
 
-	app.get('/', function (req, res) { 
+	router.get('/', function (req, res) { 
 
 		if (req.session.info) {
 			// add reveal window too
-			utils.rendering(req.headers.host, 'index', req.session.connected, function callback(objects) {
-				var theme = objects.theme, layout = objects.layout;
-				res.render(theme, layout);
+			utils.rendering(req.headers.host, 'index', {}, req.session.connected, function callback(layout) {
+				res.end(layout);
 			});
 
 		} else {
-			utils.rendering(req.headers.host, 'index', req.session.connected, function callback(objects) {
-				var theme = objects.theme, layout = objects.layout;
-				res.render(theme, layout);
+			utils.rendering(req.headers.host, 'index', {}, req.session.connected, function callback(layout) {
+				res.end(layout);
 			});
-
 		}
 	} );
 
-	app.get('/themes', utils.restricted, function (req, res) { 
-
+	router.get('/themes', utils.restricted, function (req, res) { 
 		var themes_find = new ModelsBase(req.headers.host);
 		themes_find.find({}, function callback(results) {
 
-			utils.rendering(req.headers.host, 'themes', req.session.connected, function callback(objects) {
-				var theme = objects.theme, layout = objects.layout;
-				layout.data = results;
-				res.render(theme, layout);
+			utils.rendering(req.headers.host, 'themes', results, req.session.connected, function callback(layout) {
+				res.end(layout);
 			});
 		});
 	} );
-	app.post('/themes', utils.restricted, function (req, res) { 
+	router.post('/themes', utils.restricted, function (req, res) { 
 		var validator = new Validator();   
 		validator.check(req.body.path, 'path').notEmpty();
 		validator.check(req.body.record, 'record').notEmpty();
 		var errors = validator.getErrors();
 		if (errors.length)
 		{
-			utils.rendering(req.headers.host, 'themes', req.session.connected, function callback(objects) {
-				var theme = objects.theme, layout = objects.layout;
-				layout.message = 'Required fields: '+errors,
-				layout.path = req.body.path,
-				layout.record = req.body.record;
-				res.render(theme, layout);
+			var data = { message: 'Required fields: ' + errors, 
+				path: req.body.path, 
+				record: req.body.record }
+			utils.rendering(req.headers.host, 'themes', data, req.session.connected, function callback(layout) {
+				res.end(layout);
 			});
 		} else {
 			var theme_insert = new ModelsBase(req.headers.host);
 			var value = { path: req.body.path, record: req.body.record };
 			theme_insert.insert(value, function callbacks(results) {
-				utils.rendering(req.headers.host, 'themes', req.session.connected, function callback(objects) {
-					var theme = objects.theme, layout = objects.layout;
-					layout.form = false;
-					layout.data = results;
-					res.render(theme, layout);
+
+				var data = { form: true,
+					data: results }										
+				utils.rendering(req.headers.host, 'themes', data, req.session.connected, function callback(layout) {
+					res.end(layout);
 				});
 
 			});			
 		}
 	} );
 
-
-	app.get('/invalid', function (req, res) {
-		res.send("<center>You request isn't valid, contact: ...</center>", 404);
+	router.get('/invalid', function (req, res) {
+		res.writeHead(404, "Content-type: text/html");
+		res.end("<center>You request isn't valid, contact: ...</center>");
 	} );
 
-	app.get('/status', function (req, res) {
-		res.send("HI", 200);
+	router.get('/status', function (req, res) {
+		res.end("HI");
 	} );
 
 }
+
 
 exports.route = route
