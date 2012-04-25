@@ -80,8 +80,8 @@ function route() {
 // TODO: continue and see how paginator on view
 		var options = {skip: skip, limit: 5}
 		post_list.find(value, options, function callbacks(results) {
-			var data = { form: false,
-				data: results};
+			var data = { form: { post: false },
+				data_posts: results};
 			utils.rendering(req.headers.host, 'posts', data, req.session.connected, function callback(layout) {
 				res.end(layout);
 			});

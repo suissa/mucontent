@@ -65,13 +65,12 @@ function route() {
 			user_login.login(value, function callbacks(results) {
 				// ISSUE 6: MISSING CHECK ON OBJECTS
 				if (results.length != 0) {
-					var connected=true;
+					var connected = true;
 					req.session.connected = connected;
 					req.session.info = results;
 // if i don't use this temp variable the objects are overwrited by rendering function
-					var data = { form: true,
-						user: true,
-						data: results}						
+					var data = { form: false,
+						data_user: results}						
 					utils.rendering(req.headers.host, 'login', data, req.session.connected, function callback(layout) {
 						res.end(layout);
 					});
@@ -109,7 +108,7 @@ function route() {
 		} else {
 			// ONLY ONE USERNAME
 			var user_check = new ModelsUser(req.headers.host);
-			var value = {name: req.body.name};
+			var value = { name: req.body.name };
 			user_check.find(value, function callbacks(results) {
 				// CHECK IF THERE ARE OTHER USER
 				if (results.length == 0) {
@@ -121,8 +120,8 @@ function route() {
 					};
 					user_insert.insert(value, function callbacks(results) {
 						var data = { form: false,
-							user: true,
-							data: results}
+//							user: true,
+							data_user: results}
 						utils.rendering(req.headers.host, 'registration', data, req.session.connected, function callback(layout) {
 							res.end(layout);
 						});
@@ -155,31 +154,35 @@ function route() {
 			if (req.session.info[0].role === "admin"){
 				var value = {};
 			} else {
-				res.redirect('/user/view/'+req.session.info[0].name);
+// redirect to right user
+  				var location = '/user/view/'+req.session.info[0].name;
+				res.writeHead(302, {
+				  	'Location': location
+				});
+				res.end();
 			}
 
-		}			
+		}		
+		var data = {};	
 		var user_list = new ModelsUser(req.headers.host);
 		user_list.find(value, function callbacks(results) {
 			if (req.params.operation === "edit") {
-				var data = { form: true,
-					user: true,
-					registration: true,
+				data = { form: {registration: true, user: true},
 					type: 'user',
 					name: results[0].name,
 					email: results[0].email,
 					password: results[0].password};
 			} else if ((req.params.operation === "new") && (req.session.info[0].role == "admin")) {
-				var data = { form: true,
+				data = { form: true,
 					user: true,
 					type: 'user',
 					registration: true,
 					restricted: true};
 			} else {
-				var data = { user: true,
-					data: results};
+				data = { form: {user: false},
+					data_user: results};
 			}
-			utils.rendering(req.headers.host, 'index', {}, req.session.connected, function callback(layout) {
+			utils.rendering(req.headers.host, 'user', data, req.session.connected, function callback(layout) {
 				res.end(layout);
 			});
 		}); 
@@ -208,9 +211,7 @@ function route() {
 					password: req.body.password
 				};
 				user_edit.update(value, function callbacks(results) {
-					var data = {form: false,
-						user: true,
-						data: results};
+					var data = {data_user: results};
 					utils.rendering(req.headers.host, '/user', data, req.session.connected, function callback(layout) {
 						res.end(layout);
 					});

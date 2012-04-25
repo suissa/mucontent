@@ -11,6 +11,6 @@
     		"mongodb":"0.9.9-7",
     		"validator":"0.4.5",
     		"hogan.js":"*", 
-    		"connect-mongodb":"1.1.3"
+    		"connect-mongo":"*"
   	}
 }

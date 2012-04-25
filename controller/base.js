@@ -12,10 +12,10 @@ var utils = require('../lib/utils');
 function route() {
 
 	router.get('/', function (req, res) { 
-
 		if (req.session.info) {
 			// add reveal window too
-			utils.rendering(req.headers.host, 'index', {}, req.session.connected, function callback(layout) {
+			var data = { reveal: true, sidebar: true }
+			utils.rendering(req.headers.host, 'index', data, req.session.connected, function callback(layout) {
 				res.end(layout);
 			});
 

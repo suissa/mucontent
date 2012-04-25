@@ -12,8 +12,8 @@
 
 </head>
 <body>
-<!-- window reveal for foundation, see controller/base.js -->
 	{{#reveal}}
+	<!-- window reveal for foundation, see controller/base.js -->
 		<div id='modale' class='reveal-modal'>
        			<h1>Titolo</h1>
        			<p>Testo contenuto nella finestra modale</p>
@@ -26,12 +26,6 @@
 			{{#menu}}
         			<li><a href='{{path}}' class='main'> {{item}} </a></li>
 			{{/menu}}
-			{{#connected}}
-        			<li><a href='{{path}}' class='main'> {{item}} </a></li>
-			{{/connected}}
-			{{#notconnected}}
-        			<li><a href='{{path}}' class='main'> {{item}} </a></li>
-			{{/notconnected}}
 
 		</ul>
 	{{/header }}
@@ -82,27 +76,24 @@
 
 			{{/form}}
 
-			{{#data}}
-				{{#user}}
-					{{name}} -
-					{{email}} -
-					{{password}} | 
-					<a href='/user/edit/{{name}}'>edit</a><br>
-				{{/user}}
+			{{#data_user}}
+				{{name}} -
+				{{email}} -
+				{{password}} | 
+				<a href='/user/edit/{{name}}'>edit</a><br>
+			{{/data_user}}
 
-				{{#post}}
-					Title: {{title}} - Date: {{date}}<br>
-					Content: {{content}}
-					<a href='/posts/edit/{{slug}}'>edit</a><br>
-					<a href='/archive/2'>2</a><br>
-				{{/post}}
+			{{#data_posts}}
+				Title: {{title}} - Date: {{date}}<br>
+				Content: {{content}}
+				<a href='/posts/edit/{{slug}}'>edit</a><br>
+				<a href='/archive/2'>2</a><br>
+			{{/data_posts}}
 
-				{{#themes}}
-					{{path}} : {{record}}
-					{{connected}} : {{record}} 
-				{{/themes}}
+			{{#data_themes}}
+				{{field}} : {{value}}
+			{{/data_themes}}
 
-			{{/data}}
 			{{message}}
 
 

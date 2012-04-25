@@ -4,12 +4,7 @@
 // REQUIREMENTS
 var router = require('route66');
 var connect = require('connect');
-// FOR SESSION IN MONGODB
-var Db = require('mongodb').Db
- Server = require('mongodb').Server
- server_config = new Server('localhost', 27017, {auto_reconnect: true, native_parser: true})
- db = new Db('proxy', server_config, {})
- mongoStore = require('connect-mongodb');
+var mongoStore = require('connect-mongo')(connect);
 
 
 // EXPORT EXPRESS CONFIGURATION SETTINGS
@@ -23,15 +18,16 @@ Config = function(app)	{
 	app.use(connect.cookieParser("cadcsda"));
 	app.use(connect.session({
 		cookie: {maxAge: 60000 * 20}, // 20 minutes
-		store: new mongoStore({db: db})
+//		secret: "cdacsdaljclks",
+		store: new mongoStore({db: 'proxy'})
 		})
 	);
 
 	app.use(router);
-	app.use(function(err, req, res, next){
+/*	app.use(function(err, req, res, next){
 		res.end("404");
 	});
-	
+*/	
 
 }
 
