@@ -18,35 +18,42 @@ Validator.prototype.getErrors = function () {
 
 function route() {
 
-	router.get('/posts/:operation?', utils.restricted_module, utils.restricted, function (req, res) { 
+	router.get('/posts/:operation?/:value?', utils.restricted_module, utils.restricted, function (req, res) { 
 		var data = {};
 		if (req.params.operation) {
-			data.type = req.params.operation,
-			data.title = 'ciao';
+			data.form = {post: true, type: req.params.operation};
+			var post_list = new ModelsPost(req.headers.host);
+			var value = {slug: req.params.value};
+			post_list.find(value, {}, function callbacks(results) {
+				data.title = results[0].title;
+				data.content = results[0].content;
+				utils.rendering(req.headers.host, 'posts', data, req.session.info, function callback(layout) {
+					res.end(layout);
+				});
+			});
 		} else {
-			data.type = 'new';
+			data.form = {post: true, type: 'new'};
+			utils.rendering(req.headers.host, 'posts', data, req.session.info, function callback(layout) {
+				res.end(layout);
+			});
 		}
-		utils.rendering(req.headers.host, 'posts', data, req.session.connected, function callback(layout) {
-			res.end(layout);
-		});
 	} );
 	router.post('/posts', utils.restricted_module, utils.restricted, function (req, res) { 
 		var validator = new Validator();   
 		validator.check(req.body.title, 'title').notEmpty();
 		validator.check(req.body.content, 'post').notEmpty();
 		var errors = validator.getErrors();
-                var domain = cache.get('domain'), post_layout = {};
 		if (errors.length)
 		{
-			var data = {message: 'Required fields: ' + errors,
+			var data = {
+				message: { action: 'error', message: 'Required fields: ' + errors},
 				title: req.body.title,
 				content: req.body.content};
-			utils.rendering(req.headers.host, 'posts', data, req.session.connected, function callback(layout) {
+			utils.rendering(req.headers.host, 'posts', data, req.session.info, function callback(layout) {
 				res.end(layout);
 			});
 		} else {
 			if (req.body.type == "new"){
-				var post_insert = new ModelsPost(req.headers.host);
 				var title = req.body.title;
 				var slug = title.replace(' ', '-');
 				var date = new Date();
@@ -56,10 +63,11 @@ function route() {
 					slug: slug,
 					date: date
 				};
+				var post_insert = new ModelsPost(req.headers.host);
 				post_insert.insert(value, function callbacks(results) {
 					var data = {form: false,
-						data: results};
-					utils.rendering(req.headers.host, 'posts', data, req.session.connected, function callback(layout) {
+						data_posts: results};
+					utils.rendering(req.headers.host, 'posts', data, req.session.info, function callback(layout) {
 						res.end(layout);
 					});			
 				});			
@@ -80,9 +88,12 @@ function route() {
 // TODO: continue and see how paginator on view
 		var options = {skip: skip, limit: 5}
 		post_list.find(value, options, function callbacks(results) {
-			var data = { form: { post: false },
-				data_posts: results};
-			utils.rendering(req.headers.host, 'posts', data, req.session.connected, function callback(layout) {
+			var data = { 
+				form: { post: false },
+				data_posts: results,
+				paginator: true
+			};
+			utils.rendering(req.headers.host, 'posts', data, req.session.info, function callback(layout) {
 				res.end(layout);
 			});
 		}); 

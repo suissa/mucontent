@@ -15,12 +15,12 @@ function route() {
 		if (req.session.info) {
 			// add reveal window too
 			var data = { reveal: true, sidebar: true }
-			utils.rendering(req.headers.host, 'index', data, req.session.connected, function callback(layout) {
+			utils.rendering(req.headers.host, 'index', data, req.session.info, function callback(layout) {
 				res.end(layout);
 			});
 
 		} else {
-			utils.rendering(req.headers.host, 'index', {}, req.session.connected, function callback(layout) {
+			utils.rendering(req.headers.host, 'index', {}, req.session.info, function callback(layout) {
 				res.end(layout);
 			});
 		}
@@ -28,34 +28,41 @@ function route() {
 
 	router.get('/themes', utils.restricted, function (req, res) { 
 		var themes_find = new ModelsBase(req.headers.host);
-		themes_find.find({}, function callback(results) {
-
-			utils.rendering(req.headers.host, 'themes', results, req.session.connected, function callback(layout) {
+		themes_find.find({type: 'theme'}, function callback(results) {
+			var data = {
+				form: {themes: true},
+				content: results[0].html
+			};
+			utils.rendering(req.headers.host, 'themes', data, req.session.info, function callback(layout) {
 				res.end(layout);
 			});
 		});
 	} );
 	router.post('/themes', utils.restricted, function (req, res) { 
 		var validator = new Validator();   
-		validator.check(req.body.path, 'path').notEmpty();
-		validator.check(req.body.record, 'record').notEmpty();
+		validator.check(req.body.content, 'content').notEmpty();
 		var errors = validator.getErrors();
 		if (errors.length)
 		{
-			var data = { message: 'Required fields: ' + errors, 
-				path: req.body.path, 
-				record: req.body.record }
-			utils.rendering(req.headers.host, 'themes', data, req.session.connected, function callback(layout) {
+			var data = { 
+				message: { action: 'error', message: 'Required fields: ' + errors}, 
+				path: req.body.content
+			}
+			utils.rendering(req.headers.host, 'themes', data, req.session.info, function callback(layout) {
 				res.end(layout);
 			});
 		} else {
-			var theme_insert = new ModelsBase(req.headers.host);
-			var value = { path: req.body.path, record: req.body.record };
-			theme_insert.insert(value, function callbacks(results) {
+			var theme_update = new ModelsBase(req.headers.host);
+			var value = { 
+				type: 'theme', html: req.body.content };
+			theme_update.update(value, function callbacks(results) {
 
-				var data = { form: true,
-					data: results }										
-				utils.rendering(req.headers.host, 'themes', data, req.session.connected, function callback(layout) {
+				var data = {
+					form: {themes: true},
+					content: results.html,
+					message: 'Wait few minutes for cache refresh'
+				};
+				utils.rendering(req.headers.host, 'themes', data, req.session.info, function callback(layout) {
 					res.end(layout);
 				});
 

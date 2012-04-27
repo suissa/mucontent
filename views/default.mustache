@@ -38,6 +38,9 @@
 			<div class='six columns'>
 				<h1>{{pagetitle}}</h1>
 
+{{#message}}			<div class='alert-box {{action}}'>{{message}} <a href'' class='close'>&times;</a></div>
+{{/message}}
+
 <!-- THE FORMS -->
 			{{#form}}
 				
@@ -57,7 +60,7 @@
 
 				{{#post}}
 					<form method='post' action='/posts' class='nice'>
-						<input type='hidden' name='{{type}}' value='{{type}}' />
+						<input type='hidden' name='type' value='{{type}}' />
 						<input type='text' name='title' class='input-text' placeholder='Title' value='{{title}}'/>
 						<textarea name='content' class='input-text' placeholder='Content'/>{{content}}</textarea>
 						<input type='submit' value='Submit' class='small radius button'/>
@@ -66,8 +69,7 @@
 
 				{{#themes}}
 					<form method='post' action='/themes' class='nice'>
-					     	<input type='text' name='path' class='input-text' placeholder='Path' value='{{path}}'/>
-					     	<input type='text' name='record' class='input-text' placeholder='Record' value='{{record}}'/>
+						<textarea name='content' class='input-text' placeholder='Content' rows='150' cols='100'/>{{content}}</textarea>
 					     	<input type='submit' value='Submit' class='small radius button'/>
 					</form>
 
@@ -87,16 +89,15 @@
 				Title: {{title}} - Date: {{date}}<br>
 				Content: {{content}}
 				<a href='/posts/edit/{{slug}}'>edit</a><br>
-				<a href='/archive/2'>2</a><br>
-			{{/data_posts}}
+						{{/data_posts}}
 
 			{{#data_themes}}
 				{{field}} : {{value}}
 			{{/data_themes}}
 
-			{{message}}
-
-
+{{#paginator}}
+	<a href='/archive/2'>2</a><br>
+{{/paginator}}
 			</div>
 
 <!-- RIGHT COLOUMS / SIDEBAR -->
@@ -116,7 +117,8 @@
 <!-- FOOTER -->
 	<!-- ISSUE:4-->
 	{{#footer}}
-		<center>FOOTER QUI</center>
+		<center>FOOTER HERE</center>
 	{{/footer}}
 </body>
 </html>
+
