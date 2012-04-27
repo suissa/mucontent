@@ -6,25 +6,44 @@ Go into directory and run: npm install
 On MongoDB's shell:
 
 use proxy;
+
 db.sites.insert({"domain" : "mysite.com", "subdomains" : "prova.com,prova1.com", "database" : "mysite" });
+
 use mysite;
+
 db.information.insert({ "type":"path", "method":"index", "pagetitle":"Mysite","header":true, "reveal":true});
+
 db.information.insert({ "type":"path", "method":"login", "pagetitle":"Login", "header":"true","form": "{\"user\":\"true\",\"type\":\"login\"}" })
+
 db.information.insert({ "type":"path", "method":"registration", "pagetitle":"Registration","header":"true","form": "{\"registration\":\"true\",\"user\":\"true\",\"type\":\"registration\"}" })
+
 db.information.insert({ "type":"path", "method":"user", "pagetitle":"User","header":"true","form": "{\"registration\":\"true\",\"user\":\"true\",\"type\":\"user\"}" })
+
 db.information.insert({ "type":"path", "method":"posts", "pagetitle":"Posts","header":"true","form": "{\"post\":\"true\" }" })
+
 db.information.insert({ "type":"path", "method":"themes", "pagetitle":"Themes","header":"true","form": "{\"themes\":\"true\"}" })
+
 db.information.insert({ "type":"path", "method":"404","pagetitle":"404","header":"true" })
+
 db.information.insert({ "type":"menu", "path":"/", "item":"Home"});
+
 db.information.insert({ "type":"menu", "path":"/login", "item":"Login", "acl": "guest"});
+
 db.information.insert({ "type":"menu", "path":"/registration", "item":"Registration", "acl": "guest"});
+
 db.information.insert({ "type":"menu", "path":"/user", "item":"User", "acl": "admin,user"});
+
 db.information.insert({ "type":"menu", "path":"/posts", "item":"Post", "acl": "admin,user"});
+
 db.information.insert({ "type":"menu", "path":"/archive", "item":"Archive"});
+
 db.information.insert({ "type":"menu", "path":"/themes", "item":"Theme", "acl": "admin"});
+
 db.information.insert({ "type":"menu", "path":"/logout", "item":"Logout", "acl": "admin,user"});
+
 db.information.insert({ "type":"module", "name":"posts", "acl": "admin,user"});
-db.user.insert({"name":"admin","password":"admin","role":"admin"})
+
+db.user.insert({"name":"admin","password":"admin","role":"admin"});
 
 Create a themeindb.js file into directory with:
 var fs = require('fs');
