@@ -67,6 +67,14 @@
 					</form>
 				{{/post}}
 
+				{{#newsite}}
+					<form method='post' action='/newsite' class='nice'>
+						<input type='text' name='domain' class='input-text' placeholder='Principal Domain' value='{{domain}}'/>
+						<input type='text' name='subdomains' class='input-text' placeholder='All Subdomains' value='{{subdomains}}'/>
+						<input type='submit' value='Submit' class='small radius button'/>
+					</form>
+				{{/newsite}}
+
 				{{#themes}}
 					<form method='post' action='/themes' class='nice'>
 						<textarea name='content' class='input-text' placeholder='Content' rows='150' cols='100'/>{{content}}</textarea>

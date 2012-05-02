@@ -8,6 +8,7 @@ var Validator = require('validator').Validator;
 // USE THE CACHE LIBARY (See HOW IT WORKS)
 var cache = require('../lib/cache');
 var utils = require('../lib/utils');
+var newsite = require('../lib/newsite');
 
 function route() {
 
@@ -20,6 +21,7 @@ function route() {
 			});
 
 		} else {
+console.log(req.headers.host);
 			utils.rendering(req.headers.host, 'index', {}, req.session.info, function callback(layout) {
 				res.end(layout);
 			});
@@ -67,6 +69,47 @@ function route() {
 				});
 
 			});			
+		}
+	} );
+
+	router.get('/newsite', utils.restricted, function (req, res) {
+		var data = { form: {newsite: true}}; 
+		utils.rendering(req.headers.host, 'themes', data, req.session.info, function callback(layout) {
+			res.end(layout);
+		});
+	} );
+	router.post('/newsite', utils.restricted, function (req, res) { 
+		var validator = new Validator();   
+		validator.check(req.body.domain, 'domain').notEmpty();
+		validator.check(req.body.subdomains, 'subdomians').notEmpty();
+		var errors = validator.getErrors();
+		if (errors.length)
+		{
+			var data = { form: {newsite: true},
+				message: { action: 'error', message: 'Required fields: ' + errors}, 
+				domain: req.body.domain,
+				subdomains: req.body.subdomains
+			}
+			utils.rendering(req.headers.host, 'themes', data, req.session.info, function callback(layout) {
+				res.end(layout);
+			});
+		} else {
+			var database = req.body.domain;
+			database = database.split('.');
+			var information = {
+				domain: req.body.domain,
+				subdomains: req.body.subdomains,
+				database: database
+			};
+			newsite.newsite(information, database);
+
+			var data = {
+				message: {action: 'success', message: 'Done'}
+			};
+			utils.rendering(req.headers.host, 'themes', data, req.session.info, function callback(layout) {
+				res.end(layout);
+			});
+
 		}
 	} );
 

@@ -26,17 +26,19 @@ Server.prototype.proxy = function (request, response) {
 	var find_domain = false;
 	domain.forEach( function (row) {
 		var subdomains = row.subdomains;
-		subdomains = subdomains.split(',');
-console.log(subdomains);
-		subdomains.forEach( function (sub) {
-			if (request.headers.host == sub) {
-				request.headers.host = row.database;
-				find_domain = true;
-console.log(row.database);
-			}
-		});
-		if (request.headers.host === row.domain)
+		if (subdomains) {
+			subdomains = subdomains.split(',');
+			subdomains.forEach( function (sub) {
+				if (request.headers.host == sub) {
+					request.headers.host = row.database;
+					find_domain = true;
+				}
+			});
+		}
+		if (request.headers.host === row.domain) {
 			find_domain = true;
+			request.headers.host = row.database;
+		}
 	});
 	if (find_domain == false) {
 		request.url = '/invalid';

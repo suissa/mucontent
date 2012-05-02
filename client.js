@@ -27,6 +27,7 @@ health.domain_mapping(function callback(objects) {
         cache.put('domain', objects);
 	objects.forEach( function (row) {
 		var site = row.database;
+console.log(site);
 		health.information_mapping(site, function callback(objects) {
 	        	// PUT IN CACHE
 	        	cache.put(site, objects);
