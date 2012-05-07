@@ -44,15 +44,13 @@ ModelsBase.prototype.insert = function (value, callback) {
 	});
 };
 
-ModelsBase.prototype.update = function (value, callback) {
+ModelsBase.prototype.update = function (field, value, callback) {
 	var self = this;
 	this.db.open( function (error, client) {
 		if (error) throw error;
 		collection = new mongodb.Collection(client, 'information');
 // with findandmodify we get back the modify object
-		collection.findAndModify({type: value.type}, [['_id', 'asc']], {$set: {
-			html: value.html 
-			} }, {new:true}, function (err, objects) {
+		collection.findAndModify(field, [['_id', 'asc']], {$set: value}, {new:true}, function (err, objects) {
 				if (err) {
 					utils.quicklog(err.message);
 				} else {

@@ -38,22 +38,25 @@ function route() {
 		{
 			var data = { 
 				message: { action: 'error', message: 'Required fields: ' + errors}, 
-				path: req.body.content
+				content: req.body.content
 			}
 			utils.rendering(req.headers.host, 'themes', data, req.session.info, function callback(layout) {
 				res.end(layout);
 			});
 		} else {
 			var theme_update = new ModelsBase(req.headers.host);
+			var find = {
+				type: 'theme'
+			}
 			var value = { 
-				type: 'theme', html: req.body.content 
+				html: req.body.content 
 			};
-			theme_update.update(value, function callbacks(results) {
+			theme_update.update(find, value, function callbacks(results) {
 
 				var data = {
 					form: {themes: true},
 					content: results.html,
-					message: 'Wait few minutes for cache refresh'
+					message: {action: 'success', message: 'Wait few minutes for cache refresh'}
 				};
 				utils.rendering(req.headers.host, 'themes', data, req.session.info, function callback(layout) {
 					res.end(layout);
@@ -91,48 +94,144 @@ function route() {
 					res.end(layout);
 				});
 			} else {
-					var data = {
-						form: {path: false},
-						data_path: results
-					};
-					utils.rendering(req.headers.host, 'path', data, req.session.info, function callback(layout) {
-						res.end(layout);
-					});
+				var data = {
+					form: {path: false},
+					data_path: results
+				};
+				utils.rendering(req.headers.host, 'path', data, req.session.info, function callback(layout) {
+					res.end(layout);
+				});
 			}
 		});
 	} );
 	router.post('/path', utils.restricted, function (req, res) { 
 		var validator = new Validator();   
-		validator.check(req.body.content, 'content').notEmpty();
+		validator.check(req.body.method, 'method').notEmpty();
+		validator.check(req.body.pathtitle, 'pagetitle').notEmpty();
+		validator.check(req.body.formoption, 'formoption').notEmpty();
+		validator.check(req.body.headeroption, 'headeroption').notEmpty();
+		validator.check(req.body.revealoption, 'revealoption').notEmpty();
+		validator.check(req.body.sidebaroption, 'sidebaroption').notEmpty();
+		validator.check(req.body.footeroption, 'footeroption').notEmpty();
 		var errors = validator.getErrors();
 		if (errors.length)
 		{
 			var data = { 
 				message: { action: 'error', message: 'Required fields: ' + errors}, 
-				path: req.body.content
+				method: req.body.method,
+				pathtitle: req.body.pathtitle,					
+				formoption: req.body.formoption,
+				headeroption: req.body.headeroption,
+				revealoption: req.body.revealoption,
+				sidebaroption: req.body.sidebaroption,
+				footeroption: req.body.footeroption
 			}
-			utils.rendering(req.headers.host, 'themes', data, req.session.info, function callback(layout) {
+			utils.rendering(req.headers.host, 'path', data, req.session.info, function callback(layout) {
 				res.end(layout);
 			});
 		} else {
-			var theme_update = new ModelsBase(req.headers.host);
-			var value = { 
-				type: 'theme', html: req.body.content 
+			var path_update = new ModelsBase(req.headers.host);
+			var find = { 
+				type: 'path',
+				method: req.body.method
 			};
-			theme_update.update(value, function callbacks(results) {
+			var value = {
+				pagetitle: req.body.pathtitle,					
+				form: req.body.formoption,
+				header: req.body.headeroption,
+				reveal: req.body.revealoption,
+				sidebar: req.body.sidebaroption,
+				footer: req.body.footeroption
+			}				
+			path_update.update(find, value, function callbacks(results) {
 
 				var data = {
-					form: {themes: true},
-					content: results.html,
-					message: 'Wait few minutes for cache refresh'
+					form: {path: false},
+					message: {action: 'success', message: 'Wait few minutes for cache refresh'}
 				};
-				utils.rendering(req.headers.host, 'themes', data, req.session.info, function callback(layout) {
+				utils.rendering(req.headers.host, 'path', data, req.session.info, function callback(layout) {
 					res.end(layout);
 				});
 
 			});			
 		}
 	} );
+
+	router.get('/menu/:operation?/:path?', utils.restricted, function (req, res) { 
+		var value = {};
+		if (req.params.path) {
+			value = {
+				type: 'menu',
+				path: req.params.path 
+			}
+		} else {
+			value = {
+				type: 'menu'
+			}
+		}
+		var menu_find = new ModelsBase(req.headers.host);
+		menu_find.find(value, function callback(results) {
+			if (req.params.operation == "edit") {
+				var data = {
+					pathvalue: results[0].path,
+					itemvalue: results[0].item,
+					alc: results[0].acl
+				}
+				utils.rendering(req.headers.host, 'menu', data, req.session.info, function callback(layout) {
+					res.end(layout);
+				});
+			} else {
+				var data = {
+					form: {menulist: false},
+					data_menulist: results
+				};
+				utils.rendering(req.headers.host, 'menu', data, req.session.info, function callback(layout) {
+					res.end(layout);
+				});
+			}
+		});
+	} );
+	router.post('/menu', utils.restricted, function (req, res) { 
+		var validator = new Validator();   
+		validator.check(req.body.pathvalue, 'path').notEmpty();
+		validator.check(req.body.itemvalue, 'item').notEmpty();
+		validator.check(req.body.acl, 'acl').notEmpty();
+		var errors = validator.getErrors();
+		if (errors.length)
+		{
+			var data = { 
+				message: { action: 'error', message: 'Required fields: ' + errors}, 
+				pathvalue: req.body.pathvalue,
+				itemvalue: req.body.itemvalue,
+				acl: req.body.acl
+			}
+			utils.rendering(req.headers.host, 'menu', data, req.session.info, function callback(layout) {
+				res.end(layout);
+			});
+		} else {
+			var menu_update = new ModelsBase(req.headers.host);
+			var find = { 
+				type: 'menu',
+				path: req.body.pathvalue
+			};
+			var value = {
+				item: req.body.itemvalue,
+				acl: req.body.acl
+			}				
+			menu_update.update(find, value, function callbacks(results) {
+
+				var data = {
+					form: {path: false},
+					message: {action: 'success', message: 'Wait few minutes for cache refresh'}
+				};
+				utils.rendering(req.headers.host, 'path', data, req.session.info, function callback(layout) {
+					res.end(layout);
+				});
+
+			});			
+		}
+	} );
+
 
 	router.get('/invalid', function (req, res) {
 		res.writeHead(404, "Content-type: text/html");
@@ -144,6 +243,5 @@ function route() {
 	} );
 
 }
-
 
 exports.route = route

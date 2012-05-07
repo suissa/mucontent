@@ -13,10 +13,10 @@
 </head>
 <body>
 	{{#reveal}}
-	<!-- window reveal for foundation, see controller/base.js -->
+	<!-- window reveal for foundation -->
 		<div id='modale' class='reveal-modal'>
-       			<h1>Titolo</h1>
-       			<p>Testo contenuto nella finestra modale</p>
+       			<h1>Title</h1>
+       			<p>Text in reveal modal windows</p>
        			<a class='close-reveal-modal'>x</a>
     		</div>
 	{{/reveal}}
@@ -80,6 +80,15 @@
 					</form>
 				{{/path}}
 
+				{{#menulist}}
+					<form method='post' action='/path' class='nice'>
+						<input type='text' name='pathvalue' class='input-text' placeholder='Path' value='{{pathvalue}}'/>
+						<input type='text' name='itemvalue' class='input-text' placeholder='Item' value='{{itemvalue}}'/>
+						<input type='text' name='acl' class='input-text' placeholder='Acl' value='{{acl}}'/>
+						<input type='submit' value='Submit' class='small radius button'/>
+					</form>
+				{{/menulist}}
+
 				{{#newsite}}
 					<form method='post' action='/newsite' class='nice'>
 						<input type='text' name='domain' class='input-text' placeholder='Principal Domain' value='{{domain}}'/>
@@ -113,6 +122,13 @@
 				<a href='/path/edit/{{method}}'>edit</a><br>
 			{{/data_path}}
 
+			{{#data_menulist}}
+				{{pathvalue}} -
+				{{itemvalue}} -
+				{{acl}}  
+				<a href='/menu/edit/{{pathvalue}}'>edit</a><br>
+			{{/data_menulist}}
+
 			{{#data_posts}}
 				Title: {{title}} - Date: {{date}}<br>
 				Content: {{content}}
@@ -134,7 +150,7 @@
 				<h1>SIDEBAR</h1>
 
 				{{#reveal}}
-	    				<a href='#' data-reveal-id='modale'>Clicca qui per vedere la finestra</a>
+	    				<a href='#' data-reveal-id='modale'>Click here to see modal windows </a>
 				{{/reveal}}
 			</div>
 		</div>
