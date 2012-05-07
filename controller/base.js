@@ -8,24 +8,14 @@ var Validator = require('validator').Validator;
 // USE THE CACHE LIBARY (See HOW IT WORKS)
 var cache = require('../lib/cache');
 var utils = require('../lib/utils');
-var newsite = require('../lib/newsite');
+//var newsite = require('../lib/newsite');
 
 function route() {
 
 	router.get('/', function (req, res) { 
-		if (req.session.info) {
-			// add reveal window too
-			var data = { reveal: true, sidebar: true }
-			utils.rendering(req.headers.host, 'index', data, req.session.info, function callback(layout) {
-				res.end(layout);
-			});
-
-		} else {
-console.log(req.headers.host);
-			utils.rendering(req.headers.host, 'index', {}, req.session.info, function callback(layout) {
-				res.end(layout);
-			});
-		}
+		utils.rendering(req.headers.host, 'index', {}, req.session.info, function callback(layout) {
+			res.end(layout);
+		});
 	} );
 
 	router.get('/themes', utils.restricted, function (req, res) { 
@@ -56,7 +46,8 @@ console.log(req.headers.host);
 		} else {
 			var theme_update = new ModelsBase(req.headers.host);
 			var value = { 
-				type: 'theme', html: req.body.content };
+				type: 'theme', html: req.body.content 
+			};
 			theme_update.update(value, function callbacks(results) {
 
 				var data = {
@@ -72,44 +63,74 @@ console.log(req.headers.host);
 		}
 	} );
 
-	router.get('/newsite', utils.restricted, function (req, res) {
-		var data = { form: {newsite: true}}; 
-		utils.rendering(req.headers.host, 'themes', data, req.session.info, function callback(layout) {
-			res.end(layout);
+	router.get('/path/:operation?/:path?', utils.restricted, function (req, res) { 
+		var value = {};
+		if (req.params.path) {
+			value = {
+				type: 'path',
+				method: req.params.path 
+			}
+		} else {
+			value = {
+				type: 'path'
+			}
+		}
+		var path_find = new ModelsBase(req.headers.host);
+		path_find.find(value, function callback(results) {
+			if (req.params.operation == "edit") {
+				var data = {
+					method: results[0].method,
+					pathtitle: results[0].pagetitle,					
+					formoption: results[0].form,
+					headeroption: results[0].header,
+					revealoption: results[0].reveal,
+					sidebaroption: results[0].sidebar,
+					footeroption: results[0].footer
+				}
+				utils.rendering(req.headers.host, 'path', data, req.session.info, function callback(layout) {
+					res.end(layout);
+				});
+			} else {
+					var data = {
+						form: {path: false},
+						data_path: results
+					};
+					utils.rendering(req.headers.host, 'path', data, req.session.info, function callback(layout) {
+						res.end(layout);
+					});
+			}
 		});
 	} );
-	router.post('/newsite', utils.restricted, function (req, res) { 
+	router.post('/path', utils.restricted, function (req, res) { 
 		var validator = new Validator();   
-		validator.check(req.body.domain, 'domain').notEmpty();
-		validator.check(req.body.subdomains, 'subdomians').notEmpty();
+		validator.check(req.body.content, 'content').notEmpty();
 		var errors = validator.getErrors();
 		if (errors.length)
 		{
-			var data = { form: {newsite: true},
+			var data = { 
 				message: { action: 'error', message: 'Required fields: ' + errors}, 
-				domain: req.body.domain,
-				subdomains: req.body.subdomains
+				path: req.body.content
 			}
 			utils.rendering(req.headers.host, 'themes', data, req.session.info, function callback(layout) {
 				res.end(layout);
 			});
 		} else {
-			var database = req.body.domain;
-			database = database.split('.');
-			var information = {
-				domain: req.body.domain,
-				subdomains: req.body.subdomains,
-				database: database
+			var theme_update = new ModelsBase(req.headers.host);
+			var value = { 
+				type: 'theme', html: req.body.content 
 			};
-			newsite.newsite(information, database);
+			theme_update.update(value, function callbacks(results) {
 
-			var data = {
-				message: {action: 'success', message: 'Done'}
-			};
-			utils.rendering(req.headers.host, 'themes', data, req.session.info, function callback(layout) {
-				res.end(layout);
-			});
+				var data = {
+					form: {themes: true},
+					content: results.html,
+					message: 'Wait few minutes for cache refresh'
+				};
+				utils.rendering(req.headers.host, 'themes', data, req.session.info, function callback(layout) {
+					res.end(layout);
+				});
 
+			});			
 		}
 	} );
 

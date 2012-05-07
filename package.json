@@ -1,7 +1,7 @@
 {
   	"name":"MuContent",
 	"description":"A multisite, modulare and scalable CMS",
-  	"version":"0.0.1",
+  	"version":"0.1.a",
   	"author": {
     		"name": "Andrea Di Mario",
     		"email": "anddimario@gmail.com"
@@ -12,6 +12,6 @@
     		"validator":"0.4.5",
     		"hogan.js":"*", 
     		"connect-mongo":"*",
-		"connect":"*"
+		"connect":"*",
   	}
 }

@@ -49,11 +49,7 @@ ModelsUser.prototype.insert = function (value, callback) {
 		collection = new mongodb.Collection(client, 'user');
 		
 
-		collection.insert({
-			name: value.name, 
-			email: value.email, 
-			password: value.password
-			}, {safe: true}, function (err, objects) {
+		collection.insert(value, {safe: true}, function (err, objects) {
 				if (err) {
 					utils.quicklog(err.message);
 				} else {

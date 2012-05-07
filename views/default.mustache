@@ -67,6 +67,19 @@
 					</form>
 				{{/post}}
 
+				{{#path}}
+					<form method='post' action='/path' class='nice'>
+						<input type='text' name='method' class='input-text' placeholder='Method' value='{{method}}'/>
+						<input type='text' name='pathtitle' class='input-text' placeholder='PageTitle' value='{{pathtitle}}'/>
+						<input type='text' name='formoption' class='input-text' placeholder='FormOption' value='{{formoption}}'/>
+						<input type='text' name='headeroption' class='input-text' placeholder='Header' value='{{headeroption}}'/>
+						<input type='text' name='revealoption' class='input-text' placeholder='RevealOption' value='{{revealoption}}'/>
+						<input type='text' name='sidebaroption' class='input-text' placeholder='SideBarOption' value='{{sidebaroption}}'/>
+						<input type='text' name='footeroption' class='input-text' placeholder='FooterOption' value='{{footeroption}}'/>
+						<input type='submit' value='Submit' class='small radius button'/>
+					</form>
+				{{/path}}
+
 				{{#newsite}}
 					<form method='post' action='/newsite' class='nice'>
 						<input type='text' name='domain' class='input-text' placeholder='Principal Domain' value='{{domain}}'/>
@@ -92,6 +105,13 @@
 				{{password}} | 
 				<a href='/user/edit/{{name}}'>edit</a><br>
 			{{/data_user}}
+
+			{{#data_path}}
+				{{method}} -
+				{{pagetitle}} -
+				{{form}} ... 
+				<a href='/path/edit/{{method}}'>edit</a><br>
+			{{/data_path}}
 
 			{{#data_posts}}
 				Title: {{title}} - Date: {{date}}<br>

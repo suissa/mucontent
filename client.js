@@ -27,7 +27,6 @@ health.domain_mapping(function callback(objects) {
         cache.put('domain', objects);
 	objects.forEach( function (row) {
 		var site = row.database;
-console.log(site);
 		health.information_mapping(site, function callback(objects) {
 	        	// PUT IN CACHE
 	        	cache.put(site, objects);
@@ -52,8 +51,10 @@ domain.forEach( function (row) {
 }, 15000);
 
 // INCLUDE START APP
-app.listen(8080, '127.0.0.1');
-utils.quicklog("Start Application");
+health.get_interface( function (stdout) {
+	app.listen(8080, stdout);
+	utils.quicklog("Start Application");
+	// ADD TO CLIENT LIST
+	health.add_client();
+});
 
-// ADD TO CLIENT LIST
-health.add_client();

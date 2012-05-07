@@ -7,6 +7,8 @@ var ModelsUser = require('../models/user.js');
 var Validator = require('validator').Validator;
 var cache = require('../lib/cache');
 var utils = require('../lib/utils');
+var crypto = require('crypto');
+
 
 Validator.prototype.error = function (msg) {
     this._errors.push(msg);
@@ -65,7 +67,12 @@ function route() {
 			});
 		} else {
 			var user_login = new ModelsUser(req.headers.host);
-			var value = {name: req.body.name, password: req.body.password};
+  			var shasum = crypto.createHash('sha1');
+			shasum.update(req.body.password);
+			var value = {
+				name: req.body.name, 
+				password: shasum.digest('hex')
+			};
 			user_login.login(value, function callbacks(results) {
 				// ISSUE 6: MISSING CHECK ON OBJECTS
 				if (results.length != 0) {
@@ -121,10 +128,13 @@ function route() {
 				// CHECK IF THERE ARE OTHER USER
 				if (results.length == 0) {
 					var user_insert = new ModelsUser(req.headers.host);
+  					var shasum = crypto.createHash('sha1');
+					shasum.update(req.body.password);
 					var value = {
 						name: req.body.name, 
 						email: req.body.email, 
-						password: req.body.password
+						role: 'user',
+						password: shasum.digest('hex')
 					};
 					user_insert.insert(value, function callbacks(results) {
 						var data = { form: false,
@@ -136,7 +146,7 @@ function route() {
 					});
 				} else {
 					var data = {
-						message: {action: 'success', message: 'User already exists'},
+						message: {action: 'warning', message: 'User already exists'},
 						name: req.body.name,
 						email: req.body.email}
 					utils.rendering(req.headers.host, 'registration', req.session.info, function callback(layout) {
