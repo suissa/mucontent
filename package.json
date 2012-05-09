@@ -12,6 +12,6 @@
     		"validator":"0.4.5",
     		"hogan.js":"*", 
     		"connect-mongo":"*",
-		"connect":"*",
+		"connect":"*"
   	}
 }

@@ -13,6 +13,9 @@ var Config = require('./config');
 var configuration = new Config(app);
 
 var fs = require('fs')
+
+function start() {
+
 // get all controller as a module (all function is route)
 fs.readdir(__dirname + '/controller', function (err, files) {
 	files.forEach(function(item) {
@@ -36,18 +39,18 @@ health.domain_mapping(function callback(objects) {
 
 // REPEAT THESE CHECK
 setInterval(function () {
-var domain = cache.get('domain');
-domain.forEach( function (row) {
-	health.domain_mapping(function callback(objects) {
-	        // PUT IN CACHE
-	        cache.put('domain', objects);
-		var site = row.database;
-		health.information_mapping(site, function callback(objects) {
+	var domain = cache.get('domain');
+	domain.forEach( function (row) {
+		health.domain_mapping(function callback(objects) {
 		        // PUT IN CACHE
-		        cache.put(site, objects);
+		        cache.put('domain', objects);
+			var site = row.database;
+			health.information_mapping(site, function callback(objects) {
+			        // PUT IN CACHE
+			        cache.put(site, objects);
+			});
 		});
 	});
-});
 }, 15000);
 
 // INCLUDE START APP
@@ -58,3 +61,6 @@ health.get_interface( function (stdout) {
 	health.add_client();
 });
 
+}
+
+exports.start = start;

@@ -83,7 +83,7 @@ function route() {
 			if (req.params.operation == "edit") {
 				var data = {
 					method: results[0].method,
-					pathtitle: results[0].pagetitle,					
+					pathtitle: results[0].pagetitle,	
 					formoption: results[0].form,
 					headeroption: results[0].header,
 					revealoption: results[0].reveal,
@@ -157,12 +157,12 @@ function route() {
 		}
 	} );
 
-	router.get('/menu/:operation?/:path?', utils.restricted, function (req, res) { 
+	router.get('/menu/:operation?/:item?', utils.restricted, function (req, res) { 
 		var value = {};
-		if (req.params.path) {
+		if (req.params.item) {
 			value = {
 				type: 'menu',
-				path: req.params.path 
+				item: req.params.item 
 			}
 		} else {
 			value = {
@@ -175,7 +175,7 @@ function route() {
 				var data = {
 					pathvalue: results[0].path,
 					itemvalue: results[0].item,
-					alc: results[0].acl
+					acl: results[0].acl
 				}
 				utils.rendering(req.headers.host, 'menu', data, req.session.info, function callback(layout) {
 					res.end(layout);

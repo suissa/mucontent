@@ -1,23 +1,24 @@
 MuContent is a multisite and multilanguage cms in Javascript (Node.js) written with a central proxy for balancing the request on multiple client. Based on MongoDB (the intentions are to use it for storage too, without other software for that). Themes are based on Foundation framework and mustache. 
 
-INSTALLATION:
+# INSTALLATION
 
-Go into lib directory, then run: node newsite.js "myname.com" "www.myname.com,..."
+Go into lib directory, then run: `node newsite.js "myname.com" "www.myname.com,..."`
 
+Where the first argument is the principal site and the second argument is the list of subdomains separed by a comma.  
 This create the first site and each new site that you want.
 
 Insert the data and points the domain and subdomains to 127.0.0.1 on /etc/hosts
 
-Run: node app.js
+Run: `node app.js`
 
 On browser: http://myname.com
 
-Admin User: admin
+Admin User: admin  
 Admin Password: admin
 
 ---------------------------------
 
-License
+# LICENSE
 
 (The MIT License)
 

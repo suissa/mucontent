@@ -16,7 +16,7 @@ Server.prototype.start = function () {
 
 Server.prototype.proxy = function (request, response) {
 
-	// you can use addListner to like this: http://www.catonmat.net/http-proxy-in-nodejs/
+	// you can use addListner too like this: http://www.catonmat.net/http-proxy-in-nodejs/
 	// but on new nodejs use .on
 	utils.quicklog("Request " + request.connection.remoteAddress + " " + request.method + " " + request.url + " - " + request.headers.host);
 

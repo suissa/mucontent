@@ -81,7 +81,7 @@
 				{{/path}}
 
 				{{#menulist}}
-					<form method='post' action='/path' class='nice'>
+					<form method='post' action='/menu' class='nice'>
 						<input type='text' name='pathvalue' class='input-text' placeholder='Path' value='{{pathvalue}}'/>
 						<input type='text' name='itemvalue' class='input-text' placeholder='Item' value='{{itemvalue}}'/>
 						<input type='text' name='acl' class='input-text' placeholder='Acl' value='{{acl}}'/>
@@ -123,10 +123,10 @@
 			{{/data_path}}
 
 			{{#data_menulist}}
-				{{pathvalue}} -
-				{{itemvalue}} -
+				{{path}} -
+				{{item}} -
 				{{acl}}  
-				<a href='/menu/edit/{{pathvalue}}'>edit</a><br>
+				<a href='/menu/edit/{{item}}'>edit</a><br>
 			{{/data_menulist}}
 
 			{{#data_posts}}
@@ -139,9 +139,9 @@
 				{{field}} : {{value}}
 			{{/data_themes}}
 
-{{#paginator}}
-	<a href='/archive/2'>2</a><br>
-{{/paginator}}
+			{{#paginator}}
+				<a href='/archive/2'>2</a><br>
+			{{/paginator}}
 			</div>
 
 <!-- RIGHT COLOUMS / SIDEBAR -->
