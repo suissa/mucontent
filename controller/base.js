@@ -1,4 +1,4 @@
-/* BASE CONTROLLER FOR SIMPLE REQUEST
+/* BASE CONTROLLER FOR BASIC ADMINISTRATION
 */
 
 var router = require('route66');
@@ -8,7 +8,7 @@ var Validator = require('validator').Validator;
 // USE THE CACHE LIBARY (See HOW IT WORKS)
 var cache = require('../lib/cache');
 var utils = require('../lib/utils');
-//var newsite = require('../lib/newsite');
+var fs = require('fs');
 
 function route() {
 
@@ -18,7 +18,7 @@ function route() {
 		});
 	} );
 
-	router.get('/themes', utils.restricted, function (req, res) { 
+	router.get('/themes', utils.restricted_module, utils.restricted, function (req, res) { 
 		var themes_find = new ModelsBase(req.headers.host);
 		themes_find.find({type: 'theme'}, function callback(results) {
 			var data = {
@@ -30,7 +30,7 @@ function route() {
 			});
 		});
 	} );
-	router.post('/themes', utils.restricted, function (req, res) { 
+	router.post('/themes', utils.restricted_module, utils.restricted, function (req, res) { 
 		var validator = new Validator();   
 		validator.check(req.body.content, 'content').notEmpty();
 		var errors = validator.getErrors();
@@ -66,7 +66,7 @@ function route() {
 		}
 	} );
 
-	router.get('/path/:operation?/:path?', utils.restricted, function (req, res) { 
+	router.get('/path/:operation?/:path?', utils.restricted_module, utils.restricted, function (req, res) { 
 		var value = {};
 		if (req.params.path) {
 			value = {
@@ -104,7 +104,7 @@ function route() {
 			}
 		});
 	} );
-	router.post('/path', utils.restricted, function (req, res) { 
+	router.post('/path', utils.restricted_module, utils.restricted, function (req, res) { 
 		var validator = new Validator();   
 		validator.check(req.body.method, 'method').notEmpty();
 		validator.check(req.body.pathtitle, 'pagetitle').notEmpty();
@@ -157,7 +157,7 @@ function route() {
 		}
 	} );
 
-	router.get('/menu/:operation?/:item?', utils.restricted, function (req, res) { 
+	router.get('/menu/:operation?/:item?', utils.restricted_module, utils.restricted, function (req, res) { 
 		var value = {};
 		if (req.params.item) {
 			value = {
@@ -191,7 +191,7 @@ function route() {
 			}
 		});
 	} );
-	router.post('/menu', utils.restricted, function (req, res) { 
+	router.post('/menu', utils.restricted_module, utils.restricted, function (req, res) { 
 		var validator = new Validator();   
 		validator.check(req.body.pathvalue, 'path').notEmpty();
 		validator.check(req.body.itemvalue, 'item').notEmpty();
@@ -232,6 +232,36 @@ function route() {
 		}
 	} );
 
+	router.get('/module/:operation?', utils.restricted_module, utils.restricted, function (req, res) { 
+		fs.readdir(__dirname, function (err, files) {
+			var value = [], modules = [];
+			// get active from cache
+			var information = cache.get(req.headers.host);
+			information.forEach( function (row) {
+				if ((row.type === "module") && (row.name !== "themes") && (row.name !== "path") && (row.name !== "menu") && (row.name !== "module")) 
+					modules.push({value: row.name, status: 'active'});
+			// get all modules and put only inactive
+			});
+        		files.forEach(function(item) {
+				var module = item.split('.')[0];
+				if ((module !== "base") && (module !== "user")) {
+					var find = false;
+					modules.forEach( function (item) {
+						if (item.value === module)
+							find = true;
+					});
+					if (find == false)
+						modules.push({value: module, status: 'inactive'});
+				}
+        		});
+
+			var data = {data_modules: modules};
+			utils.rendering(req.headers.host, 'module', data, req.session.info, function callback(layout) {
+				res.end(layout);
+			});
+		});
+
+	} );
 
 	router.get('/invalid', function (req, res) {
 		res.writeHead(404, "Content-type: text/html");

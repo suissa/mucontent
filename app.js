@@ -39,7 +39,7 @@ if (cluster.isMaster) {
         }
 
         cluster.on('death', function(worker) {
-        	utils.quicklog('worker ' + worker.pid + ' died');
+        	utils.quicklog('Worker ' + worker.pid + ' died');
         });
 } else {
 // START PROXY

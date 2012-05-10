@@ -3,7 +3,6 @@
 
 var mongodb = require('mongodb');
 var utils = require('../lib/utils');
-var fs = require('fs');
 
 var ModelsBase = function(database) {
 	this.database = database;

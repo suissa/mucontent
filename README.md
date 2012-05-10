@@ -1,4 +1,5 @@
-MuContent is a multisite and multilanguage cms in Javascript (Node.js) written with a central proxy for balancing the request on multiple client. Based on MongoDB (the intentions are to use it for storage too, without other software for that). Themes are based on Foundation framework and mustache. 
+MuContent is a multisite and multilanguage cms in Javascript (Node.js) written with a central proxy for balancing the request on multiple client. Based on MongoDB (the intentions are to use it for storage too, without other software for that). Themes are based on Foundation framework and mustache.   
+Google Group address: http://groups.google.com/group/mucontent
 
 # INSTALLATION
 
@@ -15,6 +16,17 @@ On browser: http://myname.com
 
 Admin User: admin  
 Admin Password: admin
+
+# HOW CREATE A MODULE
+
+You must create a controller and a models with module's name, see: controller/skel.js and models/skel.js
+
+# HOW RESTRICT ACCESS TO A ROUTE
+
+You can add in a route some function before the normal response to manage the access from lib/utils.js, in particoular:  
+- auth_yet: disable routing if user is connected
+- restricted: disable routing if user isn't connected
+- restricted_module: disable routing if there are restriction enabled for it in the site's information collection
 
 ---------------------------------
 

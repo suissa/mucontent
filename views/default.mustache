@@ -139,6 +139,10 @@
 				{{field}} : {{value}}
 			{{/data_themes}}
 
+			{{#data_modules}}
+				{{value}} - <a href='/{{value}}/install/{{status}}'>{{status}}</a> <br>  
+			{{/data_modules}}
+
 			{{#paginator}}
 				<a href='/archive/2'>2</a><br>
 			{{/paginator}}
