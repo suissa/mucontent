@@ -7,9 +7,9 @@
     		"email": "anddimario@gmail.com"
   	},
   	"dependencies":{
-    		"route66":"*",
-    		"mongodb":"0.9.9-7",
-    		"validator":"0.4.5",
+    		"async":"*",
+    		"mongodb":"*",
+    		"validator":"*",
     		"hogan.js":"*", 
     		"connect-mongo":"*",
 		"connect":"*"

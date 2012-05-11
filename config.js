@@ -2,7 +2,7 @@
 */
 
 // REQUIREMENTS
-var router = require('route66');
+var router = require('./lib/route66');
 var connect = require('connect');
 var mongoStore = require('connect-mongo')(connect);
 
@@ -24,10 +24,6 @@ Config = function(app)	{
 	);
 
 	app.use(router);
-/*	app.use(function(err, req, res, next){
-		res.end("404");
-	});
-*/	
 
 }
 

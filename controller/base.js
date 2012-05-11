@@ -1,7 +1,7 @@
 /* BASE CONTROLLER FOR BASIC ADMINISTRATION
 */
 
-var router = require('route66');
+var router = require('../lib/route66');
 var ModelsBase = require('../models/base.js');
 // REQUIRE CLASS TO MANAGE THE ERROR WITH ARRAY AND NOT CATCH
 var Validator = require('validator').Validator;

@@ -5,7 +5,7 @@
 
 */
 
-var router = require('route66');
+var router = require('../lib/route66');
 var ModelsPost = require('../models/posts.js');
 // REQUIRE CLASS TO MANAGE THE ERROR WITH ARRAY AND NOT CATCH
 var Validator = require('validator').Validator;
