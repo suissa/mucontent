@@ -28,6 +28,10 @@ You can add in a route some function before the normal response to manage the ac
 - restricted: disable routing if user isn't connected
 - restricted_module: disable routing if there are restriction enabled for it in the site's information collection
 
+# THANKS TO (for support and help)
+
+- vdemedes (Route66): https://github.com/vdemedes
+
 ---------------------------------
 
 # LICENSE

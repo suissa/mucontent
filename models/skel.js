@@ -13,7 +13,7 @@ var ModelsSkel = function(database) {
   	this.db = new mongodb.Db(this.database, this.serverMongo, {});
 }
 
-ModelsSkel.prototype.insert = function (value, callback) {
+ModelsSkel.prototype.install = function (value, callback) {
 	var self = this;
 	this.db.open( function (error, client) {
 		if (error) throw error;
@@ -30,7 +30,7 @@ ModelsSkel.prototype.insert = function (value, callback) {
 	});
 };
 
-ModelsSkel.prototype.remove = function (value, callback) {
+ModelsSkel.prototype.uninstall = function (value, callback) {
 	var self = this;
 	this.db.open( function (error, client) {
 		if (error) throw error;

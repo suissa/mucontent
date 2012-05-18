@@ -23,23 +23,137 @@ Validator.prototype.getErrors = function () {
 function route() {
 
 	router.get('/posts/:operation?/:value?', utils.restricted_module, utils.restricted, function (req, res) { 
-		var data = {};
-		if (req.params.operation) {
-			data.form = {post: true, type: req.params.operation};
-			var post_list = new ModelsPost(req.headers.host);
-			var value = {slug: req.params.value};
-			post_list.find(value, {}, function callbacks(results) {
-				data.title = results[0].title;
-				data.content = results[0].content;
+
+// TODO: REMOVE DATA?
+		if (req.params.operation === "install") {
+			if (req.session.info.role === 'admin') {
+				// DEFINE THE ACTIVE AND INACTIVE OPERATION FOR THE MODULE
+				if (req.params.value === "inactive") {
+					// INSERT MODULE
+					var value = {
+						type: "module",
+						name: "posts",
+						acl: "admin,user"
+					};
+					// INSTANCE THE CLASS
+					var Post = new ModelsPost(req.headers.host);
+					Post.install(value, function callback(results) {
+
+					}); 
+					// INSERT MENU
+					var value = {
+						type: "menu", 
+						path: "/posts", 
+						item: "Posts",
+						acl: "admin,user"
+					};
+					var Post = new ModelsPost(req.headers.host);
+					Post.install(value, function callback(results) {
+	
+					}); 
+					// INSERT MENU
+					var value = {
+						type: "menu", 
+						path: "/archive", 
+						item: "Archive",
+						acl: "guest,admin,user"
+					};
+					var Post = new ModelsPost(req.headers.host);
+					Post.install(value, function callback(results) {
+	
+					}); 
+					// INSERT PATH (PAGE)
+					var value = {
+						type: "path",
+						method: "posts",
+						pagetitle: "Posts",
+						header: true,
+						reveal: false,
+						sidebar: false,
+						form: "{\"post\":\"true\"}",
+						footer: true
+					};
+					// INSTANCE THE CLASS
+					var Post = new ModelsPost(req.headers.host);
+					Post.install(value, function callback(results) {
+	
+					}); 
+
+					// RENDERING
+                	       		var data = {
+                       		        	message: {action: 'success', message: 'Done, wait some seconds for cache refresh'},
+               		        	};
+					utils.rendering(req.headers.host, 'module', data, req.session.info, function callback(layout){
+        	                        	res.end(layout);
+       	        	        	});
+
+				} else if (req.params.value === "active") {
+					// REMOVE MODULE
+					var value = {
+						type: "module",
+						name: "posts",
+					};
+					var Post = new ModelsPost(req.headers.host);
+					Post.uninstall(value, function callback(results) {
+
+					}); 
+					// REMOVE PATH
+					var value = {
+						type: "path",
+						method: "posts",
+					};
+					var Post = new ModelsPost(req.headers.host);
+					Post.uninstall(value, function callback(results) {
+	
+					}); 
+					// REMOVE MENU
+					var value = {
+						type: "menu", 
+						path: "/posts", 
+					};
+					var Post = new ModelsPost(req.headers.host);
+					Post.uninstall(value, function callback(results) {
+
+					}); 
+					// REMOVE MENU
+					var value = {
+						type: "menu", 
+						path: "/archive", 
+					};
+					var Post = new ModelsPost(req.headers.host);
+					Post.uninstall(value, function callback(results) {
+
+					}); 
+
+                       			var data = {
+                       	        		message: {action: 'success', message: 'Done, wait some seconds for cache refresh'},
+	               		        };
+					utils.rendering(req.headers.host, 'module', data, req.session.info, function callback(layout){
+                	                	res.end(layout);
+       	                		});
+
+				}
+			}
+
+		} else {
+			var data = {};
+			if (req.params.operation) {
+				data.form = {post: true, type: req.params.operation};
+				var post_list = new ModelsPost(req.headers.host);
+				var value = {slug: req.params.value};
+				post_list.find(value, {}, function callbacks(results) {
+					data.title = results[0].title;
+					data.content = results[0].content;
+					utils.rendering(req.headers.host, 'posts', data, req.session.info, function callback(layout) {
+						res.end(layout);
+					});
+				});
+			} else {
+				data.form = {post: true, type: 'new'};
 				utils.rendering(req.headers.host, 'posts', data, req.session.info, function callback(layout) {
 					res.end(layout);
 				});
-			});
-		} else {
-			data.form = {post: true, type: 'new'};
-			utils.rendering(req.headers.host, 'posts', data, req.session.info, function callback(layout) {
-				res.end(layout);
-			});
+			}
 		}
 	} );
 	router.post('/posts', utils.restricted_module, utils.restricted, function (req, res) { 
@@ -102,6 +216,11 @@ function route() {
 			});
 		}); 
 	} );
+
+
+
+
+
 
 }
 

@@ -66,4 +66,39 @@ ModelsPost.prototype.update = function (value, callback) {
 	});
 };
 
+ModelsPost.prototype.uninstall = function (value, callback) {
+	var self = this;
+	this.db.open( function (error, client) {
+		if (error) throw error;
+		collection = new mongodb.Collection(client, 'information');
+
+		collection.remove(value, function (err, objects) {
+			if (err) {
+				utils.quicklog(err.message);
+			} else {
+				callback(objects);
+			}
+			self.serverMongo.close();
+		});
+	});
+};
+
+ModelsPost.prototype.install = function (value, callback) {
+	var self = this;
+	this.db.open( function (error, client) {
+		if (error) throw error;
+		collection = new mongodb.Collection(client, 'information');
+
+		collection.insert(value, function (err, objects) {
+			if (err) {
+				utils.quicklog(err.message);
+			} else {
+				callback(objects);
+			}
+			self.serverMongo.close();
+		});
+	});
+};
+
+
 module.exports = ModelsPost;

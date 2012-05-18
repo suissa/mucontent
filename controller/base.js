@@ -5,7 +5,6 @@ var router = require('../lib/route66');
 var ModelsBase = require('../models/base.js');
 // REQUIRE CLASS TO MANAGE THE ERROR WITH ARRAY AND NOT CATCH
 var Validator = require('validator').Validator;
-// USE THE CACHE LIBARY (See HOW IT WORKS)
 var cache = require('../lib/cache');
 var utils = require('../lib/utils');
 var fs = require('fs');
