@@ -44,28 +44,34 @@ Server.prototype.proxy = function (request, response) {
 		request.url = '/invalid';
 	}
 
-// choose the client for balancing
+// choose the client for balancing (balancing type: round robin)
 	var client_list = cache.get('client_list');
+	var balancer = cache.get('balancer'), last_client;
 
+
+	//get last client used in balancing
+	if (cache.get('last_client')) {
+		last_client = cache.get('last_client');
+	} else {
+		cache.put('last_client', 0);
+	}
+
+	var next_client = client_list[last_client+1];
+
+	if (last_client >= client_list.length) {
+		cache.put('last_client', 0);
+	} else {
+		cache.put('last_client', last_client+1);
+	}
+
+// if there aren't clients
 	if (client_list.length == 0) {
 		response.end("No client");
-		// TODO: do something ......
+		// TODO: do something to alert ......
 	}
-
-	var balancer = cache.get('balancer'), next_client;
-console.log(client_list);
-	if (balancer[request.connection.remoteAddress]) {
-		next_client = balancer[request.connection.remoteAddress];
-	} else {
-		// get a client and put in cache the new item
-		// take client random number
-		next_client = client_list[Math.floor(Math.random()*client_list.length)];
-		balancer[request.connection.remoteAddress] = next_client;
-		cache.put('balancer', balancer);
-	}
-
 
 	var options = {host: next_client, port: 8080, method: request.method, path: request.url, headers: request.headers}
+
 	var proxy_request = http.request(options, function (proxy_response) {
 	   	proxy_response.on('data', function(chunk) {
       			response.write(chunk, 'binary');
@@ -75,7 +81,6 @@ console.log(client_list);
 		});
 		// ISSUE 1/3: REALLY IMPORTANT, WITH THIS RESOLVE THE SESSION PROBLEMS
 	    	response.writeHead(proxy_response.statusCode, proxy_response.headers);
-//			console.log(proxy_response.headers);
 	});
 	proxy_request.on('error', function(error) {
               	utils.quicklog("Connection refused by client");

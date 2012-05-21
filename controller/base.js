@@ -174,6 +174,7 @@ function route() {
 				var data = {
 					pathvalue: results[0].path,
 					itemvalue: results[0].item,
+					position: results[0].position,
 					acl: results[0].acl
 				}
 				utils.rendering(req.headers.host, 'menu', data, req.session.info, function callback(layout) {
@@ -194,6 +195,7 @@ function route() {
 		var validator = new Validator();   
 		validator.check(req.body.pathvalue, 'path').notEmpty();
 		validator.check(req.body.itemvalue, 'item').notEmpty();
+		validator.check(req.body.position, 'position').notEmpty();
 		validator.check(req.body.acl, 'acl').notEmpty();
 		var errors = validator.getErrors();
 		if (errors.length)
@@ -202,6 +204,7 @@ function route() {
 				message: { action: 'error', message: 'Required fields: ' + errors}, 
 				pathvalue: req.body.pathvalue,
 				itemvalue: req.body.itemvalue,
+				position: req.body.position,
 				acl: req.body.acl
 			}
 			utils.rendering(req.headers.host, 'menu', data, req.session.info, function callback(layout) {
@@ -215,6 +218,7 @@ function route() {
 			};
 			var value = {
 				item: req.body.itemvalue,
+				position: req.body.position,
 				acl: req.body.acl
 			}				
 			menu_update.update(find, value, function callbacks(results) {

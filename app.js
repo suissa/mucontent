@@ -76,9 +76,3 @@ setInterval(function () {
 		cache.put('client_list', objects);
 	});
 }, 10000);
-
-// set the balancer variable on cache
-cache.put('next_client', 0);
-var balancer = {};
-cache.put('balancer', balancer);
-

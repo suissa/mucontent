@@ -45,6 +45,7 @@ function route() {
 						type: "menu", 
 						path: "/posts", 
 						item: "Posts",
+						position: "10",
 						acl: "admin,user"
 					};
 					var Post = new ModelsPost(req.headers.host);
@@ -56,6 +57,7 @@ function route() {
 						type: "menu", 
 						path: "/archive", 
 						item: "Archive",
+						position: "11",
 						acl: "guest,admin,user"
 					};
 					var Post = new ModelsPost(req.headers.host);

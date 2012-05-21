@@ -38,6 +38,7 @@ function route() {
 					type: "menu", 
 					path: "/skel", 
 					item: "Skel",
+					position: "10",
 					acl: "admin"
 				};
 				var Skel = new ModelsSkel(req.headers.host);
