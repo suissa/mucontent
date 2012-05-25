@@ -12,7 +12,8 @@ var ModelsSkel = require('../models/skel');
 function route() {
 
 	router.get('/skel', utils.restricted, function (req, res) { 
-			utils.rendering(req.headers.host, 'skel', {}, req.session.info, req.session.lang, function callback(layout){
+			var message = {};
+			utils.rendering(req.headers.host, 'skel', {}, req.session.info, req.session.lang, message, function callback(layout){
                                	res.end(layout);
 	               	});
 
@@ -37,7 +38,8 @@ function route() {
 				var value = {
 					type: "menu", 
 					path: "/skel", 
-					item: "Skel",
+					tag: "skel",
+					item: "Skel,",
 					position: "11",
 					acl: "admin"
 				};
@@ -49,10 +51,12 @@ function route() {
 				var value = {
 					type: "page",
 					method: "skel",
-					pagetitle: "Skel",
+					pagetitle: "Skel,",
 					header: true,
 					reveal: false,
 					sidebar: false,
+					// SET IT TO ADD CONTENT INTO THEME WITH MUSTACHE
+					content_skel: false,
 					form: "{\"form_skel\":\"false\"}",
 					footer: true
 				};
@@ -68,7 +72,7 @@ function route() {
                                        reference: 'waitrefresh',
                                        value: ''
                                 };
-				utils.rendering(message, req.headers.host, 'module', {}, req.session.info, req.session.lang, function callback(layout){
+				utils.rendering(req.headers.host, 'module', {}, req.session.info, req.session.lang, message, function callback(layout){
                                 	res.end(layout);
        	                	});
 
@@ -105,7 +109,7 @@ function route() {
                                        reference: 'waitrefresh',
                                        value: ''
                                 };
-				utils.rendering(message, req.headers.host, 'module', {}, req.session.info, req.session.lang, function callback(layout){
+				utils.rendering(req.headers.host, 'module', {}, req.session.info, req.session.lang, message, function callback(layout){
                                 	res.end(layout);
        	                	});
 
