@@ -26,11 +26,44 @@ ModelsBase.prototype.find = function(value, callback) {
 	});
 };
 
+ModelsBase.prototype.find_content = function(value, callback) {
+	var self = this;
+	this.db.open( function (error, client) {
+		if (error) throw error;
+		collection = new mongodb.Collection(client, 'content');
+		collection.find(value).toArray( function (err, objects) {
+			if (err) {
+				utils.quicklog(err.message);
+			} else {
+				callback(objects);
+			}
+			self.serverMongo.close();
+		});
+	});
+};
+
 ModelsBase.prototype.insert = function (value, callback) {
 	var self = this;
 	this.db.open( function (error, client) {
 		if (error) throw error;
 		collection = new mongodb.Collection(client, 'information');
+
+		collection.insert(value, function (err, objects) {
+			if (err) {
+				utils.quicklog(err.message);
+			} else {
+				callback(objects);
+			}
+			self.serverMongo.close();
+		});
+	});
+};
+
+ModelsBase.prototype.insert_content = function (value, callback) {
+	var self = this;
+	this.db.open( function (error, client) {
+		if (error) throw error;
+		collection = new mongodb.Collection(client, 'content');
 
 		collection.insert(value, function (err, objects) {
 			if (err) {
@@ -60,5 +93,55 @@ ModelsBase.prototype.update = function (field, value, callback) {
 	});
 };
 
+ModelsBase.prototype.update_content = function (field, value, callback) {
+	var self = this;
+	this.db.open( function (error, client) {
+		if (error) throw error;
+		collection = new mongodb.Collection(client, 'content');
+// with findandmodify we get back the modify object
+		collection.findAndModify(field, [['_id', 'asc']], {$set: value}, {new:true}, function (err, objects) {
+				if (err) {
+					utils.quicklog(err.message);
+				} else {
+					callback(objects);
+				}
+				self.serverMongo.close();
+		});
+	});
+};
+
+ModelsBase.prototype.remove = function (value, callback) {
+	var self = this;
+	this.db.open( function (error, client) {
+		if (error) throw error;
+		collection = new mongodb.Collection(client, 'information');
+
+		collection.remove(value, function (err, objects) {
+			if (err) {
+				utils.quicklog(err.message);
+			} else {
+				callback(objects);
+			}
+			self.serverMongo.close();
+		});
+	});
+};
+
+ModelsBase.prototype.remove_content = function (value, callback) {
+	var self = this;
+	this.db.open( function (error, client) {
+		if (error) throw error;
+		collection = new mongodb.Collection(client, 'content');
+
+		collection.remove(value, function (err, objects) {
+			if (err) {
+				utils.quicklog(err.message);
+			} else {
+				callback(objects);
+			}
+			self.serverMongo.close();
+		});
+	});
+};
 
 module.exports = ModelsBase;

@@ -12,7 +12,7 @@ var ModelsSkel = require('../models/skel');
 function route() {
 
 	router.get('/skel', utils.restricted, function (req, res) { 
-			utils.rendering(req.headers.host, 'skel', {}, req.session.info, function callback(layout){
+			utils.rendering(req.headers.host, 'skel', {}, req.session.info, req.session.lang, function callback(layout){
                                	res.end(layout);
 	               	});
 
@@ -38,7 +38,7 @@ function route() {
 					type: "menu", 
 					path: "/skel", 
 					item: "Skel",
-					position: "10",
+					position: "11",
 					acl: "admin"
 				};
 				var Skel = new ModelsSkel(req.headers.host);
@@ -47,13 +47,13 @@ function route() {
 				}); 
 				// INSERT PATH (PAGE)
 				var value = {
-					type: "path",
+					type: "page",
 					method: "skel",
 					pagetitle: "Skel",
 					header: true,
 					reveal: false,
 					sidebar: false,
-					form: "{\"skel\":\"false\"}",
+					form: "{\"form_skel\":\"false\"}",
 					footer: true
 				};
 				// INSTANCE THE CLASS
@@ -63,10 +63,12 @@ function route() {
 				}); 
 
 				// RENDERING
-                       		var data = {
-                       	        	message: {action: 'success', message: 'Done, wait some seconds for cache refresh'},
-               		        };
-				utils.rendering(req.headers.host, 'module', data, req.session.info, function callback(layout){
+                                var message = {
+                                       action: 'success',
+                                       reference: 'waitrefresh',
+                                       value: ''
+                                };
+				utils.rendering(message, req.headers.host, 'module', {}, req.session.info, req.session.lang, function callback(layout){
                                 	res.end(layout);
        	                	});
 
@@ -82,7 +84,7 @@ function route() {
 				}); 
 				// REMOVE PATH
 				var value = {
-					type: "path",
+					type: "page",
 					method: "skel",
 				};
 				var Skel = new ModelsSkel(req.headers.host);
@@ -98,11 +100,12 @@ function route() {
 				Skel.uninstall(value, function callback(results) {
 
 				}); 
-
-                       		var data = {
-                       	        	message: {action: 'success', message: 'Done, wait some seconds for cache refresh'},
-               		        };
-				utils.rendering(req.headers.host, 'module', data, req.session.info, function callback(layout){
+                                var message = {
+                                       action: 'success',
+                                       reference: 'waitrefresh',
+                                       value: ''
+                                };
+				utils.rendering(message, req.headers.host, 'module', {}, req.session.info, req.session.lang, function callback(layout){
                                 	res.end(layout);
        	                	});
 

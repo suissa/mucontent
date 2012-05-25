@@ -1,7 +1,7 @@
 {
   	"name":"MuContent",
-	"description":"A multisite, modulare and scalable CMS",
-  	"version":"0.1.a",
+	"description":"A multisite, multilanguage, modulare and scalable CMS",
+  	"version":"0.b.0",
   	"author": {
     		"name": "Andrea Di Mario",
     		"email": "anddimario@gmail.com"

@@ -24,9 +24,17 @@ You must create a controller and a models with module's name, see: controller/sk
 # HOW RESTRICT ACCESS TO A ROUTE
 
 You can add in a route some function before the normal response to manage the access from lib/utils.js, in particoular:  
-- auth_yet: disable routing if user is connected
+- auth_yet: disable routing if user is connected (admin can enter)
 - restricted: disable routing if user isn't connected
 - restricted_module: disable routing if there are restriction enabled for it in the site's information collection
+
+# LANGUAGE
+
+You can change menu and pagetitle language added it to the value separeted by a comma in the "Menu" and "Path" page.
+For site text and basic controller language you can work in the page "Language" in the admin area to add the language. Then go in "Content" and write you content. Go in "Themes" and in the mustache tag {{content_...}} for your page add the tag that you set in "Content" as {{tag}}.    
+You can add your content wherever you want in the Theme.   
+The language selection work on the session variable req.session.lang and the language id.   
+Type of content in collections: Message (application message in controller route) and Content (all content in theme that can be manage by mustache).
 
 # THANKS TO (for support and help)
 

@@ -20,31 +20,105 @@
     		</div>
 	{{/reveal}}
 
-	{{#header }}
+	{{#header}}
+	<div class='container'>
+
+		<div class='row'>
+<!-- LEFT COLUMNS -->
+			<div class='eight columns'>
+			MUCONTENT
+
+			</div>
+
+			<div class='four columns'>
+				<ul class='nav-bar'>
+					<li class='has-flyout'>
+					<a href='#' class='main'>Language Choose</a>
+					<a href='#' class='flyout-toggle'><span></span></a>
+						<div class='flyout small'>
+						{{#languages}}
+							<a href='/locales/{{lang_id}}'>{{lang_name}}</a>
+						{{/languages}}		
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+
 		<ul class='nav-bar'>
 			{{#menu}}
         			<li><a href='{{path}}' class='main'> {{item}} </a></li>
 			{{/menu}}
 
 		</ul>
-	{{/header }}
+	{{/header}}
 
 
 	<div class='container'>
 
 		<div class='row'>
 <!-- LEFT COLUMNS -->
-			<div class='six columns'>
+			<div class='eight columns'>
 				<h1>{{pagetitle}}</h1>
+
+<!-- THE MESSAGE -->
 
 			{{#message}}			
 				<div class='alert-box {{action}}'>{{message}} <a href'' class='close'>&times;</a></div>
 			{{/message}}
 
+<!-- THE DINAMIC CONTENT -->
+
+			{{#content_index}}
+
+			{{/content_index}}
+
+			{{#content_login}}
+
+			{{/content_login}}
+
+			{{#content_registration}}
+
+			{{/content_registration}}
+
+			{{#content_user}}
+
+			{{/content_user}}
+
+			{{#content_module}}
+
+			{{/content_module}}
+
+			{{#content_page}}
+
+			{{/content_page}}
+
+			{{#content_menu}}
+
+			{{/content_menu}}
+
+			{{#content_themes}}
+
+			{{/content_themes}}
+
+			{{#content_language}}
+
+			{{/content_language}}
+
+			{{#content_content}}
+
+			{{/content_content}}
+
+			{{#content_404}}
+
+			{{/content_404}}
+
+
 <!-- THE FORMS -->
 			{{#form}}
 				
-				{{#user}}
+				{{#form_user}}
 					<form method='post' action='/{{type}}' class='nice'>
 			    	 		<input type='text' name='name' class='input-text' placeholder='Nome' value='{{name}}'/>
 						{{#registration}}
@@ -56,19 +130,10 @@
 	     					<input type='password' name='password' class='input-text' placeholder='Password'/>
 	     					<input type='submit' value='Submit' class='small radius button'/>
 					</form>
-				{{/user}}
+				{{/form_user}}
 
-				{{#post}}
-					<form method='post' action='/posts' class='nice'>
-						<input type='hidden' name='type' value='{{type}}' />
-						<input type='text' name='title' class='input-text' placeholder='Title' value='{{title}}'/>
-						<textarea name='content' id='inlineTextarea' placeholder='Content'/>{{content}}</textarea>
-						<input type='submit' value='Submit' class='small radius button'/>
-					</form>
-				{{/post}}
-
-				{{#path}}
-					<form method='post' action='/path' class='nice'>
+				{{#form_page}}
+					<form method='post' action='/page' class='nice'>
 						<input type='text' name='method' class='input-text' placeholder='Method' value='{{method}}'/>
 						<input type='text' name='pathtitle' class='input-text' placeholder='PageTitle' value='{{pathtitle}}'/>
 						<input type='text' name='formoption' class='input-text' placeholder='FormOption' value='{{formoption}}'/>
@@ -78,9 +143,9 @@
 						<input type='text' name='footeroption' class='input-text' placeholder='FooterOption' value='{{footeroption}}'/>
 						<input type='submit' value='Submit' class='small radius button'/>
 					</form>
-				{{/path}}
+				{{/form_page}}
 
-				{{#menulist}}
+				{{#form_menulist}}
 					<form method='post' action='/menu' class='nice'>
 						<input type='text' name='pathvalue' class='input-text' placeholder='Path' value='{{pathvalue}}'/>
 						<input type='text' name='itemvalue' class='input-text' placeholder='Item' value='{{itemvalue}}'/>
@@ -88,71 +153,104 @@
 						<input type='text' name='acl' class='input-text' placeholder='Acl' value='{{acl}}'/>
 						<input type='submit' value='Submit' class='small radius button'/>
 					</form>
-				{{/menulist}}
+				{{/form_menulist}}
 
-				{{#newsite}}
-					<form method='post' action='/newsite' class='nice'>
-						<input type='text' name='domain' class='input-text' placeholder='Principal Domain' value='{{domain}}'/>
-						<input type='text' name='subdomains' class='input-text' placeholder='All Subdomains' value='{{subdomains}}'/>
+				{{#form_language}}
+					<form method='post' action='/language' class='nice'>
+						<input type='text' name='lang_id' class='input-text' placeholder='Language Id' value='{{lang_id}}'/>
+						<input type='text' name='lang_name' class='input-text' placeholder='Language Name' value='{{lang_name}}'/>
 						<input type='submit' value='Submit' class='small radius button'/>
 					</form>
-				{{/newsite}}
+				{{/form_language}}
 
-				{{#themes}}
+				{{#form_content}}
+					<form method='post' action='/content' class='nice'>
+						<input type='hidden' name='operation' value='{{operation}}'/>
+						<input type='text' name='type' class='input-text' placeholder='Content Type (message or content)' value='{{type}}'/>
+						<input type='text' name='tag' class='input-text' placeholder='Content Tag' value='{{tag}}'/>
+						<input type='text' name='lang_id' class='input-text' placeholder='Language Id' value='{{lang_id}}'/>
+						<textarea name='text' class='input-text' placeholder='Text'/></textarea>
+						<input type='submit' value='Submit' class='small radius button'/>
+					</form>
+				{{/form_content}}
+
+				{{#form_themes}}
 					<form method='post' action='/themes' class='nice'>
-						<textarea name='content' id='inlineTextarea' placeholder='Content' rows='150' cols='100'/>{{content}}</textarea>
+						<textarea name='content' class='expand input-text' rows='100' placeholder='Content' />{{content}}</textarea>
 					     	<input type='submit' value='Submit' class='small radius button'/>
 					</form>
 
-				{{/themes}}
+				{{/form_themes}}
 
 
 			{{/form}}
 
+			{{#data_user_new}}
+				{{#restricted}}
+				<a href='/registration'>New User</a><br><br> 
+				{{/restricted}}
+			{{/data_user_new}}
 			{{#data_user}}
 				{{name}} -
 				{{email}} -
-				{{password}} | 
-				<a href='/user/edit/{{name}}'>edit</a><br>
+				{{password}}  
+				{{#user_edit}}
+				<a href='/user/edit/{{name}}'>edit</a>
+				{{/user_edit}}
+				{{#restricted}}
+				<a href='/user/delete/{{name}}'>delete</a><br>
+				{{/restricted}}
 			{{/data_user}}
 
-			{{#data_path}}
+			{{#data_page}}
 				{{method}} -
 				{{pagetitle}} -
-				{{form}} ... 
-				<a href='/path/edit/{{method}}'>edit</a><br>
-			{{/data_path}}
+				{{form}}  
+				<a href='/page/edit/{{method}}'>edit</a><br>
+			{{/data_page}}
 
 			{{#data_menulist}}
 				{{path}} -
 				{{item}} -
 				{{position}} -
 				{{acl}}  
-				<a href='/menu/edit/{{item}}'>edit</a><br>
+				<a href='/menu/edit/{{tag}}'>edit</a><br>
 			{{/data_menulist}}
-
-			{{#data_posts}}
-				Title: {{title}} - Date: {{date}}<br>
-				Content: {{content}}
-				<a href='/posts/edit/{{slug}}'>edit</a><br>
-						{{/data_posts}}
 
 			{{#data_themes}}
 				{{field}} : {{value}}
 			{{/data_themes}}
 
+			{{#data_language_new}}
+				<a href='/language/new'>New Language</a><br><br> 
+			{{/data_language_new}}
+			{{#data_language}}
+				{{lang_id}} - 
+				{{lang_name}}
+				<a href='/language/delete/{{lang_id}}'>delete</a><br>
+			{{/data_language}}
+
+			{{#data_content_new}}
+				<a href='/content/new'>New content</a><br><br> 
+			{{/data_content_new}}
+			{{#data_content}}
+				{{type}} - 
+				{{tag}} - 
+				{{lang_id}} - 
+				{{text}}
+				<a href='/content/edit/{{tag}}/{{lang_id}}'>edit</a> 
+				<a href='/content/delete/{{tag}}/{{lang_id}}'>delete</a><br>
+			{{/data_content}}
+
 			{{#data_modules}}
 				{{value}} - <a href='/{{value}}/install/{{status}}'>{{status}}</a> <br>  
 			{{/data_modules}}
 
-			{{#paginator}}
-				<a href='/archive/2'>2</a><br>
-			{{/paginator}}
 			</div>
 
 <!-- RIGHT COLOUMS / SIDEBAR -->
 	{{#sidebar}}
-			<div class='six columns'>
+			<div class='four columns'>
 				<h1>SIDEBAR</h1>
 
 				{{#reveal}}

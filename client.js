@@ -34,6 +34,12 @@ health.domain_mapping(function callback(objects) {
 	        	// PUT IN CACHE
 	        	cache.put(site, objects);
 		});
+// put language in cache
+		health.language_mapping(site, function callback(objects) {
+		        // PUT IN CACHE
+			var site_lang = row.database+'_lang';
+		        cache.put(site_lang, objects);
+		});
 	});
 });
 
@@ -49,7 +55,14 @@ setInterval(function () {
 			        // PUT IN CACHE
 			        cache.put(site, objects);
 			});
+// put the language in cache
+			health.language_mapping(site, function callback(objects) {
+				var site_lang = row.database+'_lang';
+			        // PUT IN CACHE
+			        cache.put(site_lang, objects);
+			});
 		});
+
 	});
 }, 15000);
 

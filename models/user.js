@@ -80,4 +80,22 @@ ModelsUser.prototype.update = function (value, callback) {
 	});
 };
 
+ModelsUser.prototype.remove = function (value, callback) {
+        var self = this;
+        this.db.open( function (error, client) {
+                if (error) throw error;
+                collection = new mongodb.Collection(client, 'user');
+
+                collection.remove(value, function (err, objects) {
+                        if (err) {
+                                utils.quicklog(err.message);
+                        } else {
+                                callback(objects);
+                        }
+                        self.serverMongo.close();
+                });
+        });
+};
+
+
 module.exports = ModelsUser;

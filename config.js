@@ -8,8 +8,9 @@ var mongoStore = require('connect-mongo')(connect);
 
 // EXPORT EXPRESS CONFIGURATION SETTINGS
 Config = function(app)	{
-	var oneDay = 86400000;
-	// IMP: SET BEFORE OTHER, OTHERWISE IT DOESN'T WORK
+//	var oneDay = 86400000;
+	var oneDay = 86;
+	// IMP: SET ABOVE OTHER, OTHERWISE IT DOESN'T WORK
 	app.use(connect.static(__dirname + '/public', { maxAge: oneDay }));
 	app.use(connect.methodOverride());
 	app.use(connect.bodyParser());

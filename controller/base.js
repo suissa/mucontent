@@ -12,7 +12,11 @@ var fs = require('fs');
 function route() {
 
 	router.get('/', function (req, res) { 
-		utils.rendering(req.headers.host, 'index', {}, req.session.info, function callback(layout) {
+		//set language to default
+		if (!req.session.lang) {
+			req.session.lang = 0;
+		}
+		utils.rendering(req.headers.host, 'index', {}, req.session.info, req.session.lang, {}, function callback(layout) {
 			res.end(layout);
 		});
 	} );
@@ -21,10 +25,10 @@ function route() {
 		var themes_find = new ModelsBase(req.headers.host);
 		themes_find.find({type: 'theme'}, function callback(results) {
 			var data = {
-				form: {themes: true},
+				form: {form_themes: true},
 				content: results[0].html
 			};
-			utils.rendering(req.headers.host, 'themes', data, req.session.info, function callback(layout) {
+			utils.rendering(req.headers.host, 'themes', data, req.session.info, req.session.lang, {}, function callback(layout) {
 				res.end(layout);
 			});
 		});
@@ -35,11 +39,15 @@ function route() {
 		var errors = validator.getErrors();
 		if (errors.length)
 		{
+                        var message = {
+                                action: 'error',
+                                reference: 'required',
+                                value: errors
+                        };
 			var data = { 
-				message: { action: 'error', message: 'Required fields: ' + errors}, 
 				content: req.body.content
 			}
-			utils.rendering(req.headers.host, 'themes', data, req.session.info, function callback(layout) {
+			utils.rendering(req.headers.host, 'themes', data, req.session.info, req.session.lang, message, function callback(layout) {
 				res.end(layout);
 			});
 		} else {
@@ -51,13 +59,16 @@ function route() {
 				html: req.body.content 
 			};
 			theme_update.update(find, value, function callbacks(results) {
-
+                        	var message = {
+                        	        action: 'success',
+                	                reference: 'waitrefresh',
+        	                        value: ''
+	                        };
 				var data = {
-					form: {themes: true},
+					form: {form_themes: true},
 					content: results.html,
-					message: {action: 'success', message: 'Wait few minutes for cache refresh'}
 				};
-				utils.rendering(req.headers.host, 'themes', data, req.session.info, function callback(layout) {
+				utils.rendering(req.headers.host, 'themes', data, req.session.info, req.session.lang, message, function callback(layout) {
 					res.end(layout);
 				});
 
@@ -65,20 +76,20 @@ function route() {
 		}
 	} );
 
-	router.get('/path/:operation?/:path?', utils.restricted_module, utils.restricted, function (req, res) { 
+	router.get('/page/:operation?/:path?', utils.restricted_module, utils.restricted, function (req, res) { 
 		var value = {};
 		if (req.params.path) {
 			value = {
-				type: 'path',
+				type: 'page',
 				method: req.params.path 
 			}
 		} else {
 			value = {
-				type: 'path'
+				type: 'page'
 			}
 		}
-		var path_find = new ModelsBase(req.headers.host);
-		path_find.find(value, function callback(results) {
+		var page_find = new ModelsBase(req.headers.host);
+		page_find.find(value, function callback(results) {
 			if (req.params.operation == "edit") {
 				var data = {
 					method: results[0].method,
@@ -89,21 +100,21 @@ function route() {
 					sidebaroption: results[0].sidebar,
 					footeroption: results[0].footer
 				}
-				utils.rendering(req.headers.host, 'path', data, req.session.info, function callback(layout) {
+				utils.rendering(req.headers.host, 'page', data, req.session.info, req.session.lang, {}, function callback(layout) {
 					res.end(layout);
 				});
 			} else {
 				var data = {
-					form: {path: false},
-					data_path: results
+					form: {form_page: false},
+					data_page: results
 				};
-				utils.rendering(req.headers.host, 'path', data, req.session.info, function callback(layout) {
+				utils.rendering(req.headers.host, 'page', data, req.session.info, req.session.lang, {}, function callback(layout) {
 					res.end(layout);
 				});
 			}
 		});
 	} );
-	router.post('/path', utils.restricted_module, utils.restricted, function (req, res) { 
+	router.post('/page', utils.restricted_module, utils.restricted, function (req, res) { 
 		var validator = new Validator();   
 		validator.check(req.body.method, 'method').notEmpty();
 		validator.check(req.body.pathtitle, 'pagetitle').notEmpty();
@@ -115,8 +126,12 @@ function route() {
 		var errors = validator.getErrors();
 		if (errors.length)
 		{
+                       	var message = {
+                      	        action: 'error',
+               	                reference: 'required',
+       	                        value: errors
+                        };
 			var data = { 
-				message: { action: 'error', message: 'Required fields: ' + errors}, 
 				method: req.body.method,
 				pathtitle: req.body.pathtitle,					
 				formoption: req.body.formoption,
@@ -125,13 +140,13 @@ function route() {
 				sidebaroption: req.body.sidebaroption,
 				footeroption: req.body.footeroption
 			}
-			utils.rendering(req.headers.host, 'path', data, req.session.info, function callback(layout) {
+			utils.rendering(req.headers.host, 'page', data, req.session.info, req.session.lang, message,function callback(layout) {
 				res.end(layout);
 			});
 		} else {
 			var path_update = new ModelsBase(req.headers.host);
 			var find = { 
-				type: 'path',
+				type: 'page',
 				method: req.body.method
 			};
 			var value = {
@@ -143,12 +158,15 @@ function route() {
 				footer: req.body.footeroption
 			}				
 			path_update.update(find, value, function callbacks(results) {
-
+                       		var message = {
+                      		       action: 'success',
+               		               reference: 'waitrefresh',
+       	 	                       value: ''
+	                        };
 				var data = {
-					form: {path: false},
-					message: {action: 'success', message: 'Wait few minutes for cache refresh'}
+					form: {form_path: false},
 				};
-				utils.rendering(req.headers.host, 'path', data, req.session.info, function callback(layout) {
+				utils.rendering(req.headers.host, 'page', data, req.session.info, req.session.lang, message, function callback(layout) {
 					res.end(layout);
 				});
 
@@ -161,7 +179,7 @@ function route() {
 		if (req.params.item) {
 			value = {
 				type: 'menu',
-				item: req.params.item 
+				tag: req.params.item
 			}
 		} else {
 			value = {
@@ -171,21 +189,22 @@ function route() {
 		var menu_find = new ModelsBase(req.headers.host);
 		menu_find.find(value, function callback(results) {
 			if (req.params.operation == "edit") {
+
 				var data = {
 					pathvalue: results[0].path,
 					itemvalue: results[0].item,
 					position: results[0].position,
 					acl: results[0].acl
 				}
-				utils.rendering(req.headers.host, 'menu', data, req.session.info, function callback(layout) {
+				utils.rendering(req.headers.host, 'menu', data, req.session.info, req.session.lang, {}, function callback(layout) {
 					res.end(layout);
 				});
 			} else {
 				var data = {
-					form: {menulist: false},
+					form: {form_menulist: false},
 					data_menulist: results
 				};
-				utils.rendering(req.headers.host, 'menu', data, req.session.info, function callback(layout) {
+				utils.rendering(req.headers.host, 'menu', data, req.session.info, req.session.lang, {}, function callback(layout) {
 					res.end(layout);
 				});
 			}
@@ -200,14 +219,18 @@ function route() {
 		var errors = validator.getErrors();
 		if (errors.length)
 		{
+               		var message = {
+              		       action: 'error',
+      		               reference: 'required',
+ 	                       value: errors
+	                };
 			var data = { 
-				message: { action: 'error', message: 'Required fields: ' + errors}, 
 				pathvalue: req.body.pathvalue,
 				itemvalue: req.body.itemvalue,
 				position: req.body.position,
 				acl: req.body.acl
 			}
-			utils.rendering(req.headers.host, 'menu', data, req.session.info, function callback(layout) {
+			utils.rendering(req.headers.host, 'menu', data, req.session.info, req.session.lang, message, function callback(layout) {
 				res.end(layout);
 			});
 		} else {
@@ -222,12 +245,15 @@ function route() {
 				acl: req.body.acl
 			}				
 			menu_update.update(find, value, function callbacks(results) {
-
+               			var message = {
+              			       action: 'success',
+      			               reference: 'waitrefresh',
+ 		                       value: ''
+		                };
 				var data = {
-					form: {path: false},
-					message: {action: 'success', message: 'Wait few minutes for cache refresh'}
+					form: {form_path: false},
 				};
-				utils.rendering(req.headers.host, 'path', data, req.session.info, function callback(layout) {
+				utils.rendering(req.headers.host, 'menu', data, req.session.info, req.session.lang, message, function callback(layout) {
 					res.end(layout);
 				});
 
@@ -241,7 +267,7 @@ function route() {
 			// get active from cache
 			var information = cache.get(req.headers.host);
 			information.forEach( function (row) {
-				if ((row.type === "module") && (row.name !== "themes") && (row.name !== "path") && (row.name !== "menu") && (row.name !== "module")) 
+				if ((row.type === "module") && (row.name !== "themes") && (row.name !== "page") && (row.name !== "menu") && (row.name !== "module") && (row.name !== "language") && (row.name !== "content")) 
 					modules.push({value: row.name, status: 'active'});
 			// get all modules and put only inactive
 			});
@@ -259,11 +285,235 @@ function route() {
         		});
 
 			var data = {data_modules: modules};
-			utils.rendering(req.headers.host, 'module', data, req.session.info, function callback(layout) {
+			utils.rendering(req.headers.host, 'module', data, req.session.info, req.session.lang, {}, function callback(layout) {
 				res.end(layout);
 			});
 		});
 
+	} );
+
+	router.get('/language/:operation?/:value?', utils.restricted_module, utils.restricted, function (req, res) { 
+		var data = {}, message = {};
+		if (req.params.operation === "new") {
+			var data = {
+				form: {form_language: true},
+			};
+			utils.rendering(req.headers.host, 'language', data, req.session.info, req.session.lang, message, function callback(layout) {
+				res.end(layout);
+			});
+
+		} else if (req.params.operation === "delete" ) {
+			var value = { 
+				type: 'language',
+				lang_id: req.params.value
+			};
+			var language_remove = new ModelsBase(req.headers.host);
+			language_remove.remove(value, function callback(results) {
+
+			});
+                        message = {
+                                 action: 'success',
+                                 reference: 'deleted',
+                                 value: ''
+                        };
+			utils.rendering(req.headers.host, 'language', data, req.session.info, req.session.lang, message, function callback(layout) {
+				res.end(layout);
+			});
+		} else {
+			var value = { type: 'language' };
+			var language_find = new ModelsBase(req.headers.host);
+			language_find.find(value, function callback(results) {
+
+				data = {
+					form: {form_language: false},
+					data_language_new: true,
+					data_language:  results
+				};
+				utils.rendering(req.headers.host, 'language', data, req.session.info, req.session.lang, message, function callback(layout) {
+					res.end(layout);
+				});
+			});
+		}
+	} );
+	router.post('/language', utils.restricted_module, utils.restricted, function (req, res) { 
+		var validator = new Validator();   
+		validator.check(req.body.lang_name, 'lang_name').notEmpty();
+		validator.check(req.body.lang_id, 'lang_id').notEmpty().isNumeric();
+		var errors = validator.getErrors();
+		if (errors.length)
+		{
+               		var message = {
+         		       action: 'error',
+		               reference: 'required',
+	                       value: errors
+	                };
+			var data = { 
+				lang_name: req.body.lang_name,
+				lang_id: req.body.lang_id
+			}
+			utils.rendering(req.headers.host, 'language', data, req.session.info, req.session.lang, message, function callback(layout) {
+				res.end(layout);
+			});
+		} else {
+			var language_insert = new ModelsBase(req.headers.host);
+			var value = { 
+				type: 'language',
+				lang_id: req.body.lang_id,
+				lang_name: req.body.lang_name
+			};
+			language_insert.insert(value, function callbacks(results) {
+               			var message = {
+         			       action: 'success',
+			               reference: 'waitrefresh',
+		                       value: ''
+		                };
+				var data = {
+					form: {form_language: false},
+					data_language:  true,
+					lang_name: results[0].lang_name,
+					lang_id: results[0].lang_id
+				};
+				utils.rendering(req.headers.host, 'language', data, req.session.info, req.session.lang, message, function callback(layout) {
+					res.end(layout);
+				});
+
+			});			
+		}
+	} );
+
+	router.get('/content/:operation?/:tag?/:lang_id?', utils.restricted_module, utils.restricted, function (req, res) { 
+		var data = {}, message = {};
+		if (req.params.operation === "new") {
+			data = {
+				form: {form_content: true, operation: 'new'},
+			};
+			utils.rendering(req.headers.host, 'content', data, req.session.info, req.session.lang, message, function callback(layout) {
+				res.end(layout);
+			});
+
+		} else if (req.params.operation === "delete" ) {
+			var value = { 
+				tag: req.params.tag,
+				lang_id: req.params.lang_id
+			};
+			var content_remove = new ModelsBase(req.headers.host);
+			content_remove.remove_content(value, function callback(results) {
+
+			});
+                       	message = {
+                       	         action: 'success',
+                       	         reference: 'deleted',
+                       	         value: ''
+                       	};
+			utils.rendering(req.headers.host, 'content', {}, req.session.info, req.session.lang, message, function callback(layout) {
+				res.end(layout);
+			});
+		} else if (req.params.operation === "edit" ) {
+			data = {
+				form: {form_content: true, operation: 'edit'}, 
+				tag: req.params.tag,
+				lang_id: req.params.lang_id
+			};
+			utils.rendering(req.headers.host, 'content', data, req.session.info, req.session.lang, message, function callback(layout) {
+				res.end(layout);
+			});
+
+		} else {
+			var value = {};
+			var content_find = new ModelsBase(req.headers.host);
+			content_find.find_content(value, function callback(results) {
+
+				data = {
+					form: {form_content: false},
+					data_content_new: true,
+					data_content:  results
+				};
+				utils.rendering(req.headers.host, 'content', data, req.session.info, req.session.lang, message, function callback(layout) {
+					res.end(layout);
+				});
+			});
+		}
+	} );
+	router.post('/content', utils.restricted_module, utils.restricted, function (req, res) { 
+		var validator = new Validator();   
+		validator.check(req.body.type, 'type').notEmpty();
+		validator.check(req.body.tag, 'tag').notEmpty();
+		validator.check(req.body.lang_id, 'lang_id').notEmpty().isNumeric();
+		validator.check(req.body.text, 'text').notEmpty();
+		var errors = validator.getErrors();
+		if (errors.length)
+		{
+               		var message = {
+         		       action: 'error',
+		               reference: 'required',
+	                       value: errors
+	                };
+			var data = { 
+				type: req.body.type,
+				tag: req.body.tag,
+				text: req.body.text,
+				lang_id: req.body.lang_id
+			}
+			utils.rendering(req.headers.host, 'content', data, req.session.info, req.session.lang, message, function callback(layout) {
+				res.end(layout);
+			});
+		} else {
+			if (req.body.operation === 'new') {
+				var content_insert = new ModelsBase(req.headers.host);
+				var value = { 
+					type: req.body.type,
+					tag: req.body.tag,
+					lang_id: req.body.lang_id,
+					text: req.body.text
+				};
+				content_insert.insert_content(value, function callbacks(results) {
+               				var message = {
+         				       action: 'success',
+			        	       reference: 'waitrefresh',
+		                       	       value: ''
+			                };
+					var data = {
+						form: {form_content: false},
+						data_content:  results,
+					};
+					utils.rendering(req.headers.host, 'content', data, req.session.info, req.session.lang, message, function callback(layout) {
+						res.end(layout);
+					});
+				});			
+	
+			} else if (req.body.operation === "edit" ) {
+				var find = {
+					type: req.body.type,
+					tag: req.body.tag,
+					lang_id: req.body.lang_id
+				};
+				var value = { 
+					text: req.body.text
+				};
+				var content_update = new ModelsBase(req.headers.host);
+				content_update.update_content(find, value, function callback(results) {
+					data = results;
+	                	        message = {
+        	                	         action: 'success',
+                                 		 reference: 'waitrefresh',
+	                                	 value: ''
+        	                	};
+					utils.rendering(req.headers.host, 'content', data, req.session.info, req.session.lang, message, function callback(layout) {
+						res.end(layout);
+					});
+
+				});
+			}		
+		}
+	} );
+
+// not language or similar for routing, to limit conflict with language route above
+	router.get('/locales/:value', function (req, res) {
+		req.session.lang = req.params.value;
+		res.writeHead(302, {
+                	'Location': '/'
+                });
+		res.end();
 	} );
 
 	router.get('/invalid', function (req, res) {

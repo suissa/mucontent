@@ -21,17 +21,22 @@ Validator.prototype.getErrors = function () {
 function route() {
 
 	router.get('/logout', utils.restricted, function (req, res) { 
+		var lang = req.session.lang;
  		req.session.destroy(function(err){
 			if (err){
 				utils.quicklog(err);
 			} 
 		});
+		var message = {
+			action: 'success', 
+			reference: 'disconnected',
+			value: ''
+		};
 		var data = { 
 			pagetitle: "Logout",
 			form: false,
-			message: {action: 'success', message: 'Disconnesso'}
 		};
-		utils.rendering(req.headers.host, 'login', data, false, function callback(layout) {
+		utils.rendering(req.headers.host, 'login', data, false, lang, message, function callback(layout) {
 			res.end(layout);
 		});
 
@@ -40,14 +45,18 @@ function route() {
 
 	router.get('/login', utils.auth_yet, function (req, res) { 
 		if (req.session.info) {
+			var message = {
+				action: 'success', 
+				reference: 'connected',
+				value: req.session.info.name
+			};
 			var data = { 
-			message: {action: 'success', message: 'Connesso ' + req.session.info.name},
 				form: false}
-			utils.rendering(req.headers.host, 'login', data, req.session.info, function callback(layout) {
+			utils.rendering(req.headers.host, 'login', data, req.session.info, req.session.lang, message, function callback(layout) {
 				res.end(layout);
 			});
 		} else {
-			utils.rendering(req.headers.host, 'login', {}, req.session.info, function callback(layout) {
+			utils.rendering(req.headers.host, 'login', {}, req.session.info, req.session.lang, {}, function callback(layout) {
 				res.end(layout);
 			});
 		}
@@ -59,10 +68,13 @@ function route() {
 		var errors = validator.getErrors();
 		if (errors.length)
 		{
-			var data = { 
-				message: {action: 'error', message: 'Required fields: ' + errors},
-				name: req.body.name}
-			utils.rendering(req.headers.host, 'login', data, req.session.info, function callback(layout) {
+			var message = {
+				action: 'error', 
+				reference: 'required',
+				value: errors
+			};
+			var data = { name: req.body.name}
+			utils.rendering(req.headers.host, 'login', data, req.session.info, req.session.lang, message, function callback(layout) {
 				res.end(layout);
 			});
 		} else {
@@ -81,17 +93,23 @@ function route() {
 						role: results[0].role
 					}
 // if i don't use this temp variable the objects are overwrited by rendering function
-					var data = { form: {user: false},
-						data_user: results}						
-					utils.rendering(req.headers.host, 'login', data, req.session.info, function callback(layout) {
+					var message = {
+						action: 'success', 
+						reference: 'connected',
+						value: results[0].name
+					};
+					var data = { form: {form_user: false}}
+					utils.rendering(req.headers.host, 'login', data, req.session.info, req.session.lang, message, function callback(layout) {
 						res.end(layout);
 					});
 
 				} else {
-					var data = { 
-						message: {action: 'success', message: 'Non trovato'}
-					}
-					utils.rendering(req.headers.host, 'login', data, req.session.info, function callback(layout) {
+					var message = {
+						action: 'error', 
+						reference: 'notfound',
+						value: ''
+					};
+					utils.rendering(req.headers.host, 'login', {}, req.session.info, req.session.lang, message, function callback(layout) {
 						res.end(layout);
 					});
 				}
@@ -101,7 +119,16 @@ function route() {
 
 
 	router.get('/registration', utils.auth_yet, function (req, res) { 
-		utils.rendering(req.headers.host, 'registration', {}, req.session.info, function callback(layout) {
+		var data = {};
+		if (req.session.info && (req.session.info.role == "admin")) {
+			data = { 
+				form: { form_user: true,
+				type: 'registration',
+				registration: true,
+				restricted: true}
+			};
+		}
+		utils.rendering(req.headers.host, 'registration', data, req.session.info, req.session.lang, {}, function callback(layout) {
 			res.end(layout);
 		});
 	} );
@@ -113,11 +140,16 @@ function route() {
 		var errors = validator.getErrors();
 		if (errors.length)
 		{
+			var message = {
+				action: 'error', 
+				reference: 'required',
+				value: errors
+			};
 			var data = { 
-				message: {action: 'error', message: 'Required fields: ' + errors},
 				name: req.body.name,
-				email: req.body.email}
-			utils.rendering(req.headers.host, 'registration', data, req.session.info, function callback(layout) {
+				email: req.body.email
+			};
+			utils.rendering(req.headers.host, 'registration', data, req.session.info, req.session.lang, message, function callback(layout) {
 				res.end(layout);
 			});
 		} else {
@@ -137,19 +169,30 @@ function route() {
 						password: shasum.digest('hex')
 					};
 					user_insert.insert(value, function callbacks(results) {
-						var data = { form: false,
-//							user: true,
-							data_user: results}
-						utils.rendering(req.headers.host, 'registration', data, req.session.info, function callback(layout) {
+						var message = {
+							action: 'success', 
+							reference: 'registrated',
+							value: ''
+						};
+						var data = { 
+							form: {form_user: false},
+							data_user: results
+						};
+						utils.rendering(req.headers.host, 'registration', data, req.session.info, req.session.lang, message, function callback(layout) {
 							res.end(layout);
 						});
 					});
 				} else {
+					var message = {
+						action: 'warning', 
+						reference: 'alreadyexists',
+						value: errors
+					};
 					var data = {
-						message: {action: 'warning', message: 'User already exists'},
 						name: req.body.name,
-						email: req.body.email}
-					utils.rendering(req.headers.host, 'registration', req.session.info, function callback(layout) {
+						email: req.body.email
+					};
+					utils.rendering(req.headers.host, 'registration', data, req.session.info, req.session.lang, message, function callback(layout) {
 						res.end(layout);
 					});
 				}
@@ -164,7 +207,7 @@ function route() {
 			if ((req.session.info.role === "admin") || (req.params.name == req.session.info.name)) {
 				var value = {name: req.params.name};
 			} else {
-				utils.rendering(req.headers.host, '404', {}, req.session.info, function callback(layout) {
+				utils.rendering(req.headers.host, '404', {}, req.session.info, req.session.lang, {}, function callback(layout) {
 					res.end(layout);
 				});
 			}
@@ -182,29 +225,48 @@ function route() {
 			}
 
 		}		
-		var data = {};	
+		var data = {}, message = {};	
 		var user_list = new ModelsUser(req.headers.host);
 		user_list.find(value, function callbacks(results) {
 			if (req.params.operation === "edit") {
-				data = { form: {registration: true, user: true},
+				data = { 
+					form: {form_user: true, registration: true},
 					type: 'user',
 					name: results[0].name,
 					email: results[0].email,
-					password: results[0].password};
+					password: results[0].password
+				};
 				if (req.session.info.role == "admin") {
 					data.form.restricted = true;
 					data.role = results[0].role;
 				}
-			} else if ((req.params.operation === "new") && (req.session.info.role == "admin")) {
-				data = { form: {user: true,
-					type: 'user',
-					registration: true,
-					restricted: true}};
+			} else if ((req.params.operation === "delete") && (req.session.info.role == "admin")) {
+				var value = {
+					name: req.params.name
+				};
+				var user_remove = new ModelsUser(req.headers.host);
+				user_remove.remove(value, function callbacks(results) {
+
+				});
+				message = {
+					action: 'success', 
+					reference: 'deleted',
+					value: ''
+				};
 			} else {
-				data = { form: {user: false},
-					data_user: results};
+				data = { 
+					form: {form_user: false},
+					data_user: results,
+				};
+				if (req.session.info.role == "admin") {
+					data.data_user_new = true;
+					data.restricted = true;
+				}
+				if (req.session.info.role) {
+					data.user_edit = true;
+				}
 			}
-			utils.rendering(req.headers.host, 'user', data, req.session.info, function callback(layout) {
+			utils.rendering(req.headers.host, 'user', data, req.session.info, req.session.lang, message, function callback(layout) {
 				res.end(layout);
 			});
 		}); 
@@ -219,11 +281,16 @@ function route() {
 			var errors = validator.getErrors();
 			if (errors.length)
 			{
+				var message = {
+					action: 'error', 
+					reference: 'required',
+					value: errors
+				};
 				var data = { 
-					message: {action: 'error', message: 'Required fields: ' + errors},
 					name: req.body.name,
-					email: req.body.email}
-				utils.rendering(req.headers.host, 'user', data, req.session.info, function callback(layout) {
+					email: req.body.email
+				};
+				utils.rendering(req.headers.host, 'user', data, req.session.info, req.session.lang, message, function callback(layout) {
 					res.end(layout);
 				});
 			} else {
@@ -235,16 +302,18 @@ function route() {
 				};
 				user_edit.update(value, function callbacks(results) {
 					var data = {data_user: results};
-					utils.rendering(req.headers.host, 'user', data, req.session.info, function callback(layout) {
+					utils.rendering(req.headers.host, 'user', data, req.session.info, req.session.lang, {}, function callback(layout) {
 						res.end(layout);
 					});
 				});
 			}
 		} else {
-			var data = {
-				message: {action: 'error', message: 'Remember that you cannot change username'}
+			var message = {
+				action: 'error', 
+				reference: 'notchange',
+				value: ''
 			};
-			utils.rendering(req.headers.host, '404', data, req.session.info, function callback(layout) {
+			utils.rendering(req.headers.host, '404', {}, req.session.info, req.session.lang, {}, function callback(layout) {
 				res.end(layout);
 			});
 		}
