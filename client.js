@@ -68,7 +68,8 @@ function start() {
 
 	// INCLUDE START APP
 	health.get_interface(function callback (interface) {
-		app.listen(8080, interface);
+//		app.listen(8080, interface);
+		app.listen(configuration.Params.client_port, interface);
 		utils.quicklog("Start Application");
 		// ADD TO APPSERVER LIST
 		health.add_appserver();

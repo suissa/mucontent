@@ -28,9 +28,17 @@ Config.prototype.Application = function(app) {
 
 // EXPORT THE PARAMS THAT USE THE APP
 Config.prototype.Params = {
+	// NETWORK INTERFACES
 	listen_interface: 'lo', // the interface where all client listen (localhost is default)
 	ip_protocol: 'IPv4', // the interface protocol	
-	heartbeat_ip: '0.0.0.0' // the ip that is shared by all server proxy and identified the master
+	heartbeat_ip: '0.0.0.0', // the ip that is shared by all server proxy and identified the master
+
+	// DATABASE
+	// For replicasets see: https://github.com/mongodb/node-mongodb-native/blob/master/docs/replicaset.md	
+	mongodb_ip: '127.0.0.1', // the mongodb ip
+	mongodb_port: 27017, // the mongodb port
+
+	client_port: '8080' // the client port
 };
 
 module.exports = Config;

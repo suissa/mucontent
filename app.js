@@ -28,6 +28,7 @@ if (cluster.isMaster) {
 		// refork the process if one death
 		cluster.fork();
 	});
+
 } else {
 	// START PROXY
 	var proxy = new Proxy();

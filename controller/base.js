@@ -382,7 +382,7 @@ function route() {
 		}
 	} );
 
-	router.get('/content/:operation?/:tag?/:lang_id?', utils.restricted_module, utils.restricted, function (req, res) { 
+	router.get('/content/:operation?/:type?/:tag?/:lang_id?', utils.restricted_module, utils.restricted, function (req, res) { 
 		var data = {}, message = {};
 		if (req.params.operation === "new") {
 			data = {
@@ -412,6 +412,7 @@ function route() {
 		} else if (req.params.operation === "edit" ) {
 			data = {
 				form: {form_content: true, operation: 'edit'}, 
+				type: req.params.type,
 				tag: req.params.tag,
 				lang_id: req.params.lang_id
 			};

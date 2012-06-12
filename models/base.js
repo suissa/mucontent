@@ -3,10 +3,13 @@
 
 var mongodb = require('mongodb');
 var utils = require('../lib/utils');
+var Config = require('../config');
+
+var configuration = new Config();
 
 var ModelsBase = function(database) {
 	this.database = database;
-	this.serverMongo = new mongodb.Server('127.0.0.1', 27017, {auto_reconnect: true});
+	this.serverMongo = new mongodb.Server(configuration.Params.mongodb_ip, configuration.Params.mongodb_port, {auto_reconnect: true});
   	this.db = new mongodb.Db(this.database, this.serverMongo, {});
 }
 

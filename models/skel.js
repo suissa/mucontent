@@ -4,12 +4,18 @@
         Version: 0.0.0
 */
 
+// REQUIREMENTS
 var mongodb = require('mongodb');
 var utils = require('../lib/utils');
+// IMPORT THE CONFIGURATION FILE
+var Config = require('../config');
+
+// CREATE A NEW CONFIGURATION INSTACE
+var configuration = new Config();
 
 var ModelsSkel = function(database) {
 	this.database = database;
-	this.serverMongo = new mongodb.Server('127.0.0.1', 27017, {auto_reconnect: true});
+	this.serverMongo = new mongodb.Server(configuration.Params.mongodb_ip, configuration.Params.mongodb_port, {auto_reconnect: true});
   	this.db = new mongodb.Db(this.database, this.serverMongo, {});
 }
 
