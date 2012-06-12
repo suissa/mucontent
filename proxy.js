@@ -1,16 +1,20 @@
-/* PROXY DEFINITION
-
+/* MuContent - PROXY DEFINITION
+	Manage the balancer and the multisite
 */
 
+// REQUIREMENTS
 var http = require('http');
 var utils = require('./lib/utils');
-// USE THE CACHE LIBARY 
 var cache = require('./lib/cache');
+var Config = require('./config');
 
+var configuration = new Config();
+
+// PROXY CLASS DEFINITION
 var Server = function () {};
 
 Server.prototype.start = function () {
-	http.createServer(this.proxy).listen(80);
+	http.createServer(this.proxy).listen(80, configuration.Params.heartbeat_ip);
 	utils.quicklog("Start server");
 }
 
@@ -45,9 +49,8 @@ Server.prototype.proxy = function (request, response) {
 	}
 
 // choose the client for balancing (balancing type: round robin)
-	var client_list = cache.get('client_list');
+	var appserver_list = cache.get('appserver_list');
 	var balancer = cache.get('balancer'), last_client;
-
 
 	//get last client used in balancing
 	if (cache.get('last_client')) {
@@ -56,18 +59,12 @@ Server.prototype.proxy = function (request, response) {
 		cache.put('last_client', 0);
 	}
 
-	var next_client = client_list[last_client+1];
+	var next_client = appserver_list[last_client+1];
 
-	if (last_client >= client_list.length) {
+	if (last_client >= appserver_list.length) {
 		cache.put('last_client', 0);
 	} else {
 		cache.put('last_client', last_client+1);
-	}
-
-// if there aren't clients
-	if (client_list.length == 0) {
-		response.end("No client");
-		// TODO: do something to alert ......
 	}
 
 	var options = {host: next_client, port: 8080, method: request.method, path: request.url, headers: request.headers}
@@ -79,7 +76,7 @@ Server.prototype.proxy = function (request, response) {
 		proxy_response.on('end', function() {
 	      		response.end();
 		});
-		// ISSUE 1/3: REALLY IMPORTANT, WITH THIS RESOLVE THE SESSION PROBLEMS
+		// WITH THIS RESOLVE THE SESSION PROBLEMS, EACH SITE HAS ONE
 	    	response.writeHead(proxy_response.statusCode, proxy_response.headers);
 	});
 	proxy_request.on('error', function(error) {

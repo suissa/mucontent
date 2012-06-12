@@ -1,4 +1,4 @@
-/* MODELS FOR USER
+/* MuContent - MODELS FOR USER
 */
 
 var mongodb = require('mongodb');

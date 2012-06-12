@@ -1,4 +1,5 @@
-/* BASE CONTROLLER FOR BASIC ADMINISTRATION
+/* MuContent - BASE CONTROLLER FOR BASIC ADMINISTRATION
+	Manage: language, themes, content, page, menu
 */
 
 var router = require('../lib/route66');
@@ -522,6 +523,7 @@ function route() {
 	} );
 
 	router.get('/status', function (req, res) {
+		res.writeHead(200, "Content-type: text/html");
 		res.end("HI");
 	} );
 

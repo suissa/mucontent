@@ -1,4 +1,4 @@
-/* USER CONTROLLER 
+/* MuContent - USER CONTROLLER 
 */
 
 var router = require('../lib/route66');
@@ -86,7 +86,7 @@ function route() {
 				password: shasum.digest('hex')
 			};
 			user_login.login(value, function callbacks(results) {
-				// ISSUE 6: MISSING CHECK ON OBJECTS
+				// CHECK ON DATABASE AND ENSURE THAT USER IS IN, THEN LOGIN
 				if (results.length != 0) {
 					req.session.info = {
 						name: results[0].name,
@@ -162,12 +162,17 @@ function route() {
 					var user_insert = new ModelsUser(req.headers.host);
   					var shasum = crypto.createHash('sha1');
 					shasum.update(req.body.password);
+
 					var value = {
 						name: req.body.name, 
 						email: req.body.email, 
-						role: 'user',
 						password: shasum.digest('hex')
 					};
+					if (req.body.role) {
+						value.role = req.body.role;
+					} else {
+						value.role = "user";
+					}
 					user_insert.insert(value, function callbacks(results) {
 						var message = {
 							action: 'success', 

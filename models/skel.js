@@ -1,4 +1,4 @@
-/* MODELS FOR SKEL EXAMPLE
+/* MuContent - MODELS FOR SKEL EXAMPLE
 	ONLY INSERT INFORMATION FOR PLUGIN IS SET
         Author: Andrea Di Mario
         Version: 0.0.0

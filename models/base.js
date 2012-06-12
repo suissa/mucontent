@@ -1,4 +1,4 @@
-/* MODELS FOR BASE OPERATION
+/* MuContent - MODELS FOR BASE OPERATION
 */
 
 var mongodb = require('mongodb');
