@@ -9,10 +9,13 @@ var Validator = require('validator').Validator;
 var cache = require('../lib/cache');
 var utils = require('../lib/utils');
 var fs = require('fs');
+var Config = require('../config');
+
+var configuration = new Config();
 
 function route() {
 
-	router.get('/', function (req, res) { 
+	router.get('/', utils.maintenance, function (req, res) { 
 		//set language to default
 		if (!req.session.lang) {
 			req.session.lang = 0;
@@ -268,7 +271,7 @@ function route() {
 			// get active from cache
 			var information = cache.get(req.headers.host);
 			information.forEach( function (row) {
-				if ((row.type === "module") && (row.name !== "themes") && (row.name !== "page") && (row.name !== "menu") && (row.name !== "module") && (row.name !== "language") && (row.name !== "content")) 
+				if ((row.type === "module") && (row.name !== "themes") && (row.name !== "page") && (row.name !== "menu") && (row.name !== "module") && (row.name !== "language") && (row.name !== "content") && (row.name !== "proxy")) 
 					modules.push({value: row.name, status: 'active'});
 			// get all modules and put only inactive
 			});
@@ -520,7 +523,7 @@ function route() {
 
 	router.get('/invalid', function (req, res) {
 		res.writeHead(404, "Content-type: text/html");
-		res.end("<center>You request isn't valid, contact: ...</center>");
+		res.end(configuration.Params.invalid_request);
 	} );
 
 	router.get('/status', function (req, res) {

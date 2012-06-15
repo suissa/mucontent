@@ -38,7 +38,11 @@ Config.prototype.Params = {
 	mongodb_ip: '127.0.0.1', // the mongodb ip
 	mongodb_port: 27017, // the mongodb port
 
-	client_port: '8080' // the client port
+	client_port: '8080', // the client port
+
+	// MESSAGES
+	invalid_request: '<center> Your request is not valid, contact: admin@domain.com</center>',
+	maintenance_message: '<center>We will back soon</center>'
 };
 
 module.exports = Config;

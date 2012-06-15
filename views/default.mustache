@@ -110,6 +110,14 @@
 
 			{{/content_content}}
 
+			{{#content_maintenance}}
+
+			{{/content_maintenance}}
+
+			{{#content_domains}}
+
+			{{/content_domains}}
+
 			{{#content_404}}
 
 			{{/content_404}}
@@ -174,6 +182,14 @@
 					</form>
 				{{/form_content}}
 
+				{{#form_maintenance}}
+					<form method='post' action='/maintenance' class='nice'>
+						<input type='checkbox' name='maintenance' value='{{value}}' {{checked}} />
+					     	<input type='submit' value='Submit' class='small radius button'/>
+					</form>
+
+				{{/form_maintenance}}
+
 				{{#form_themes}}
 					<form method='post' action='/themes' class='nice'>
 						<textarea name='content' class='expand input-text' rows='100' placeholder='Content' />{{content}}</textarea>
@@ -181,6 +197,14 @@
 					</form>
 
 				{{/form_themes}}
+
+				{{#form_domains}}
+					<form method='post' action='/domains' class='nice'>
+						<textarea name='content' class='input-text' placeholder='Content' />{{content}}</textarea>
+					     	<input type='submit' value='Submit' class='small radius button'/>
+					</form>
+
+				{{/form_domains}}
 
 
 			{{/form}}
@@ -238,8 +262,8 @@
 				{{tag}} - 
 				{{lang_id}} - 
 				{{text}}
-				<a href='/content/edit/{{tag}}/{{lang_id}}'>edit</a> 
-				<a href='/content/delete/{{tag}}/{{lang_id}}'>delete</a><br>
+				<a href='/content/edit/{{type}}/{{tag}}/{{lang_id}}'>edit</a> 
+				<a href='/content/delete/{{type}}/{{tag}}/{{lang_id}}'>delete</a><br>
 			{{/data_content}}
 
 			{{#data_modules}}

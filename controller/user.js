@@ -118,7 +118,7 @@ function route() {
 	} );
 
 
-	router.get('/registration', utils.auth_yet, function (req, res) { 
+	router.get('/registration', utils.maintenance, utils.auth_yet, function (req, res) { 
 		var data = {};
 		if (req.session.info && (req.session.info.role == "admin")) {
 			data = { 

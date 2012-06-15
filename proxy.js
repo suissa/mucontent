@@ -47,8 +47,8 @@ Server.prototype.proxy = function (request, response) {
 	if (find_domain == false) {
 		request.url = '/invalid';
 	}
-
-// choose the client for balancing (balancing type: round robin)
+	
+	// choose the client for balancing (balancing type: round robin)
 	var appserver_list = cache.get('appserver_list');
 	var balancer = cache.get('balancer'), last_client;
 
