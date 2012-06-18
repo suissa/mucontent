@@ -41,6 +41,10 @@ Type of content in collections: Message (application message in controller route
 You can add the check if your application is in maintenance mode into you router.get() function with the definition of function utils.maintenance (lib/utils.js), see /home and /registration path on the controllers.  
 Admin could see everything and /login path haven't the maintenance function by default.
 
+# MENU AND SUBMENU
+
+If you want add a parent without path use # as it.
+
 # THANKS TO (for support and help)
 
 - vdemedes (Route66): https://github.com/vdemedes

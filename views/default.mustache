@@ -46,9 +46,22 @@
 		</div>
 	</div>
 
+<!-- MENU -->
 		<ul class='nav-bar'>
 			{{#menu}}
+<!-- ATTENTION AT SUBMENU DEFINITION -->
+				{{^is_parent}}
         			<li><a href='{{path}}' class='main'> {{item}} </a></li>
+				{{/is_parent}}
+				{{#is_parent}}
+				<li class='has-flyout'><a href='{{path}}' class='main'> {{item}} </a>
+						<div class='flyout small'>
+			        			{{#submenu}}
+							<a href='{{submenu_path}}' class='main'> {{submenu_item}} </a>
+							{{/submenu}}
+						</div>
+				</li>
+				{{/is_parent}}
 			{{/menu}}
 
 		</ul>
@@ -97,6 +110,10 @@
 			{{#content_menu}}
 
 			{{/content_menu}}
+
+			{{#content_submenu}}
+
+			{{/content_submenu}}
 
 			{{#content_themes}}
 
@@ -162,6 +179,17 @@
 						<input type='submit' value='Submit' class='small radius button'/>
 					</form>
 				{{/form_menulist}}
+
+				{{#form_submenulist}}
+					<form method='post' action='/submenu' class='nice'>
+						<input type='text' name='pathvalue' class='input-text' placeholder='Path' value='{{pathvalue}}'/>
+						<input type='text' name='itemvalue' class='input-text' placeholder='Item' value='{{itemvalue}}'/>
+						<input type='text' name='position' class='input-text' placeholder='Position' value='{{position}}'/>
+						<input type='text' name='parent_position' class='input-text' placeholder='Position' value='{{parent_position}}'/>
+						<input type='text' name='acl' class='input-text' placeholder='Acl' value='{{acl}}'/>
+						<input type='submit' value='Submit' class='small radius button'/>
+					</form>
+				{{/form_submenulist}}
 
 				{{#form_language}}
 					<form method='post' action='/language' class='nice'>
@@ -240,6 +268,15 @@
 				{{acl}}  
 				<a href='/menu/edit/{{tag}}'>edit</a><br>
 			{{/data_menulist}}
+
+			{{#data_submenulist}}
+				{{submenu_path}} -
+				{{submenu_item}} -
+				{{position}} -
+				{{parent_position}} -
+				{{acl}}  
+				<a href='/submenu/edit/{{tag}}'>edit</a><br>
+			{{/data_submenulist}}
 
 			{{#data_themes}}
 				{{field}} : {{value}}

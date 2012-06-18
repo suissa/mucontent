@@ -28,6 +28,10 @@ Config.prototype.Application = function(app) {
 
 // EXPORT THE PARAMS THAT USE THE APP
 Config.prototype.Params = {
+	// DEFAULT PATH TO IGNORE (leave first element empty)
+	default_path: ['', 'module', 'themes', 'maintenance', 'domains', 'content', 'language', 'menu', 'page'],
+	default_controller: ['', 'base', 'user', 'proxy'],
+
 	// NETWORK INTERFACES
 	listen_interface: 'lo', // the interface where all client listen (localhost is default)
 	ip_protocol: 'IPv4', // the interface protocol	

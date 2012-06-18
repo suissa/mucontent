@@ -255,9 +255,100 @@ function route() {
  		                       value: ''
 		                };
 				var data = {
-					form: {form_path: false},
+					form: {form_submenu: false},
 				};
 				utils.rendering(req.headers.host, 'menu', data, req.session.info, req.session.lang, message, function callback(layout) {
+					res.end(layout);
+				});
+
+			});			
+		}
+	} );
+
+	router.get('/submenu/:operation?/:item?', utils.restricted_module, utils.restricted, function (req, res) { 
+		var value = {};
+		if (req.params.item) {
+			value = {
+				type: 'submenu',
+				tag: req.params.item
+			}
+		} else {
+			value = {
+				type: 'submenu'
+			}
+		}
+		var submenu_find = new ModelsBase(req.headers.host);
+		submenu_find.find(value, function callback(results) {
+			if (req.params.operation == "edit") {
+
+				var data = {
+					pathvalue: results[0].submenu_path,
+					itemvalue: results[0].submenu_item,
+					position: results[0].position,
+					parent_position: results[0].parent_position,
+					acl: results[0].acl
+				}
+				utils.rendering(req.headers.host, 'submenu', data, req.session.info, req.session.lang, {}, function callback(layout) {
+					res.end(layout);
+				});
+			} else {
+				var data = {
+					form: {form_submenulist: false},
+					data_submenulist: results
+				};
+				utils.rendering(req.headers.host, 'submenu', data, req.session.info, req.session.lang, {}, function callback(layout) {
+					res.end(layout);
+				});
+			}
+		});
+	} );
+	router.post('/submenu', utils.restricted_module, utils.restricted, function (req, res) { 
+		var validator = new Validator();   
+		validator.check(req.body.pathvalue, 'path').notEmpty();
+		validator.check(req.body.itemvalue, 'item').notEmpty();
+		validator.check(req.body.position, 'position').notEmpty();
+		validator.check(req.body.parent_position, 'parent_position').notEmpty();
+		validator.check(req.body.acl, 'acl').notEmpty();
+		var errors = validator.getErrors();
+		if (errors.length)
+		{
+               		var message = {
+              		       action: 'error',
+      		               reference: 'required',
+ 	                       value: errors
+	                };
+			var data = { 
+				pathvalue: req.body.pathvalue,
+				itemvalue: req.body.itemvalue,
+				position: req.body.position,
+				parent_position: req.body.parent_position,
+				acl: req.body.acl
+			}
+			utils.rendering(req.headers.host, 'submenu', data, req.session.info, req.session.lang, message, function callback(layout) {
+				res.end(layout);
+			});
+		} else {
+			var submenu_update = new ModelsBase(req.headers.host);
+			var find = { 
+				type: 'submenu',
+				submenu_path: req.body.pathvalue
+			};
+			var value = {
+				submenu_item: req.body.itemvalue,
+				position: req.body.position,
+				parent_position: req.body.parent_position,
+				acl: req.body.acl
+			}				
+			submenu_update.update(find, value, function callbacks(results) {
+               			var message = {
+              			       action: 'success',
+      			               reference: 'waitrefresh',
+ 		                       value: ''
+		                };
+				var data = {
+					form: {form_submenu: false},
+				};
+				utils.rendering(req.headers.host, 'submenu', data, req.session.info, req.session.lang, message, function callback(layout) {
 					res.end(layout);
 				});
 
@@ -271,13 +362,14 @@ function route() {
 			// get active from cache
 			var information = cache.get(req.headers.host);
 			information.forEach( function (row) {
-				if ((row.type === "module") && (row.name !== "themes") && (row.name !== "page") && (row.name !== "menu") && (row.name !== "module") && (row.name !== "language") && (row.name !== "content") && (row.name !== "proxy")) 
+				if (!configuration.Params.default_path.indexOf(row.name)) 
 					modules.push({value: row.name, status: 'active'});
 			// get all modules and put only inactive
 			});
         		files.forEach(function(item) {
 				var module = item.split('.')[0];
-				if ((module !== "base") && (module !== "user")) {
+//				if (!configuration.Params.default_controller.indexOf(module)) {
+				if ((module !== "user") && (module !== "base") && (module !== "proxy")) {
 					var find = false;
 					modules.forEach( function (item) {
 						if (item.value === module)
