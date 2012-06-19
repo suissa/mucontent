@@ -1,13 +1,13 @@
 {
   	"name":"MuContent",
 	"description":"A multisite, multilanguage, modulare and scalable CMS",
-  	"version":"1.0.1",
+  	"version":"1.0.2",
   	"author": {
     		"name": "Andrea Di Mario",
     		"email": "anddimario@gmail.com"
   	},
   	"dependencies":{
-    		"async":"*",
+    		"route66":"*",
     		"mongodb":"*",
     		"validator":"*",
     		"hogan.js":"*", 

@@ -2,7 +2,7 @@
 */
 
 // REQUIREMENTS
-var router = require('./lib/route66');
+var router = require('route66');
 var connect = require('connect');
 var mongoStore = require('connect-mongo')(connect);
 
@@ -29,8 +29,8 @@ Config.prototype.Application = function(app) {
 // EXPORT THE PARAMS THAT USE THE APP
 Config.prototype.Params = {
 	// DEFAULT PATH TO IGNORE (leave first element empty)
-	default_path: ['', 'module', 'themes', 'maintenance', 'domains', 'content', 'language', 'menu', 'page'],
-	default_controller: ['', 'base', 'user', 'proxy'],
+	default_path: ['module', 'themes', 'maintenance', 'domains', 'content', 'language', 'menu', 'page', 'submenu'],
+	default_controller: ['base', 'user', 'proxy'],
 
 	// NETWORK INTERFACES
 	listen_interface: 'lo', // the interface where all client listen (localhost is default)

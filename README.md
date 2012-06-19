@@ -45,7 +45,12 @@ Admin could see everything and /login path haven't the maintenance function by d
 
 If you want add a parent without path use # as it.
 
-# THANKS TO (for support and help)
+# MODULES
+
+- Blog: https://github.com/anddimario/mucontent-blog
+- Static Page: https://github.com/anddimario/mucontent-static-page
+
+# THANKS TO (for support and/or help)
 
 - vdemedes (Route66): https://github.com/vdemedes
 

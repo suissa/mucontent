@@ -2,7 +2,7 @@
 	Manage: language, themes, content, page, menu
 */
 
-var router = require('../lib/route66');
+var router = require('route66');
 var ModelsBase = require('../models/base.js');
 // REQUIRE CLASS TO MANAGE THE ERROR WITH ARRAY AND NOT CATCH
 var Validator = require('validator').Validator;
@@ -362,21 +362,22 @@ function route() {
 			// get active from cache
 			var information = cache.get(req.headers.host);
 			information.forEach( function (row) {
-				if (!configuration.Params.default_path.indexOf(row.name)) 
+				if ((configuration.Params.default_path.indexOf(row.name) == -1) && (row.type === "module")) {
 					modules.push({value: row.name, status: 'active'});
+				}
 			// get all modules and put only inactive
 			});
         		files.forEach(function(item) {
 				var module = item.split('.')[0];
-//				if (!configuration.Params.default_controller.indexOf(module)) {
-				if ((module !== "user") && (module !== "base") && (module !== "proxy")) {
+				if (configuration.Params.default_controller.indexOf(module) == -1) {
 					var find = false;
-					modules.forEach( function (item) {
-						if (item.value === module)
+					modules.forEach( function (line) {
+						if (line.value === module)
 							find = true;
 					});
-					if (find == false)
+					if (find == false) {
 						modules.push({value: module, status: 'inactive'});
+					}
 				}
         		});
 

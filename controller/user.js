@@ -1,7 +1,7 @@
 /* MuContent - USER CONTROLLER 
 */
 
-var router = require('../lib/route66');
+var router = require('route66');
 var ModelsUser = require('../models/user.js');
 // REQUIRE CLASS TO MANAGE THE ERROR WITH ARRAY AND NOT CATCH
 var Validator = require('validator').Validator;

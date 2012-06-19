@@ -5,7 +5,7 @@
 */
 
 // INCLUDE THE LIBRARY
-var router = require('../lib/route66');
+var router = require('route66');
 var utils = require('../lib/utils');
 var ModelsSkel = require('../models/skel');
 
