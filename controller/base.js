@@ -15,7 +15,27 @@ var configuration = new Config();
 
 function route() {
 
-	router.get('/', utils.maintenance, function (req, res) { 
+// THIS ROUTE IS USED TO GET STATIC PAGE FROM DB OR SEND A 404 OR HOME PAGE
+	router.get('/:staticpage?', utils.maintenance, utils.restricted, function (req, res) {
+console.log(req.params.staticpage);
+		var information = cache.get(req.headers.host), find = false;
+		information.forEach( function (row) {
+			if ((row.type === "page") && (row.method === req.params.staticpage)) {
+				find = true;
+				utils.rendering(req.headers.host, req.params.staticpage, {}, req.session.info, req.session.lang, {}, function callback(layout) {
+					res.end(layout);
+				});
+			}
+		});
+		if (!find && req.params.staticpage) {
+			utils.rendering(req.headers.host, '404', {}, req.session.info, req.session.lang, {}, function callback(layout) {
+				res.end(layout);
+			});
+		}
+
+	} );
+
+	router.get('/', utils.maintenance, function (req, res) {
 		//set language to default
 		if (!req.session.lang) {
 			req.session.lang = 0;
@@ -23,6 +43,7 @@ function route() {
 		utils.rendering(req.headers.host, 'index', {}, req.session.info, req.session.lang, {}, function callback(layout) {
 			res.end(layout);
 		});
+
 	} );
 
 	router.get('/themes', utils.restricted_module, utils.restricted, function (req, res) { 
@@ -80,43 +101,56 @@ function route() {
 		}
 	} );
 
-	router.get('/page/:operation?/:path?', utils.restricted_module, utils.restricted, function (req, res) { 
-		var value = {};
-		if (req.params.path) {
-			value = {
-				type: 'page',
-				method: req.params.path 
-			}
+	router.get('/page/:operation?/:item?', utils.restricted_module, utils.restricted, function (req, res) { 
+		if (req.params.operation === "new") {
+			var data = { 
+				type: 'new'
+			};
+			utils.rendering(req.headers.host, 'page', data, req.session.info, req.session.lang, {}, function callback(layout) {
+				res.end(layout);
+			});
 		} else {
-			value = {
-				type: 'page'
-			}
-		}
-		var page_find = new ModelsBase(req.headers.host);
-		page_find.find(value, function callback(results) {
-			if (req.params.operation == "edit") {
-				var data = {
-					method: results[0].method,
-					pathtitle: results[0].pagetitle,	
-					formoption: results[0].form,
-					headeroption: results[0].header,
-					revealoption: results[0].reveal,
-					sidebaroption: results[0].sidebar,
-					footeroption: results[0].footer
+			var value = {};
+			if (req.params.path) {
+				value = {
+					type: 'page',
+					method: req.params.item 
 				}
-				utils.rendering(req.headers.host, 'page', data, req.session.info, req.session.lang, {}, function callback(layout) {
-					res.end(layout);
-				});
 			} else {
-				var data = {
-					form: {form_page: false},
-					data_page: results
-				};
-				utils.rendering(req.headers.host, 'page', data, req.session.info, req.session.lang, {}, function callback(layout) {
-					res.end(layout);
-				});
+				value = {
+					type: 'page'
+				}
 			}
-		});
+			var page_find = new ModelsBase(req.headers.host);
+			page_find.find(value, function callback(results) {
+				if (req.params.operation === "edit") {
+					var data = {
+						type: 'edit',
+						method: results[0].method,
+						pathtitle: results[0].pagetitle,	
+						formoption: results[0].form,
+						contentoption: results[0].content,
+						headeroption: results[0].header,
+						revealoption: results[0].reveal,
+						sidebaroption: results[0].sidebar,
+						footeroption: results[0].footer
+					}
+					utils.rendering(req.headers.host, 'page', data, req.session.info, req.session.lang, {}, function callback(layout) {
+						res.end(layout);
+					});
+				
+				} else {
+					var data = {
+						form: {form_page: false},
+						data_page_new: true,
+						data_page: results
+					};
+					utils.rendering(req.headers.host, 'page', data, req.session.info, req.session.lang, {}, function callback(layout) {
+						res.end(layout);
+					});
+				}
+			});
+		}
 	} );
 	router.post('/page', utils.restricted_module, utils.restricted, function (req, res) { 
 		var validator = new Validator();   
@@ -148,71 +182,115 @@ function route() {
 				res.end(layout);
 			});
 		} else {
-			var path_update = new ModelsBase(req.headers.host);
-			var find = { 
-				type: 'page',
-				method: req.body.method
-			};
-			var value = {
-				pagetitle: req.body.pathtitle,					
-				form: req.body.formoption,
-				header: req.body.headeroption,
-				reveal: req.body.revealoption,
-				sidebar: req.body.sidebaroption,
-				footer: req.body.footeroption
-			}				
-			path_update.update(find, value, function callbacks(results) {
-                       		var message = {
-                      		       action: 'success',
-               		               reference: 'waitrefresh',
-       	 	                       value: ''
-	                        };
-				var data = {
-					form: {form_path: false},
+			if (req.body.type === "edit") {
+				var path_update = new ModelsBase(req.headers.host);
+				var find = { 
+					type: 'page',
+					method: req.body.method
 				};
-				utils.rendering(req.headers.host, 'page', data, req.session.info, req.session.lang, message, function callback(layout) {
-					res.end(layout);
+				var value = {
+					pagetitle: req.body.pathtitle,					
+					form: req.body.formoption,
+					content: req.body.contentoption,
+					header: req.body.headeroption,
+					reveal: req.body.revealoption,
+					sidebar: req.body.sidebaroption,
+					footer: req.body.footeroption
+				}				
+				path_update.update(find, value, function callbacks(results) {
+                       			var message = {
+                	      		       action: 'success',
+ 	              		               reference: 'waitrefresh',
+       		 	                       value: ''
+	                	        };
+					var data = {
+						form: {form_path: false},
+					};
+					utils.rendering(req.headers.host, 'page', data, req.session.info, req.session.lang, message, function callback(layout) {
+						res.end(layout);
+					});
+
+				});
+			} else if (req.body.type === "new") {
+				var path_insert = new ModelsBase(req.headers.host);
+				var value = {
+					type: 'page',
+					method: req.body.method,
+					pagetitle: req.body.pathtitle,					
+					form: req.body.formoption,
+					content: req.body.contentoption,
+					header: req.body.headeroption,
+					reveal: req.body.revealoption,
+					sidebar: req.body.sidebaroption,
+					footer: req.body.footeroption
+				}				
+				path_insert.insert(value, function callbacks(results) {
+                       			var message = {
+                	      		       action: 'success',
+ 	              		               reference: 'waitrefresh',
+       		 	                       value: ''
+	                	        };
+					var data = {
+						form: {form_path: false},
+					};
+					utils.rendering(req.headers.host, 'page', data, req.session.info, req.session.lang, message, function callback(layout) {
+						res.end(layout);
+					});
+
 				});
 
-			});			
+			}			
 		}
 	} );
 
 	router.get('/menu/:operation?/:item?', utils.restricted_module, utils.restricted, function (req, res) { 
-		var value = {};
-		if (req.params.item) {
-			value = {
-				type: 'menu',
-				tag: req.params.item
-			}
-		} else {
-			value = {
-				type: 'menu'
-			}
-		}
-		var menu_find = new ModelsBase(req.headers.host);
-		menu_find.find(value, function callback(results) {
-			if (req.params.operation == "edit") {
+		if (req.params.operation === "new") {
+			var data = { 
+				type: 'new'
+			};
 
-				var data = {
-					pathvalue: results[0].path,
-					itemvalue: results[0].item,
-					position: results[0].position,
-					acl: results[0].acl
+			utils.rendering(req.headers.host, 'menu', data, req.session.info, req.session.lang, {}, function callback(layout) {
+				res.end(layout);
+			});
+
+		} else {
+			var value = {};
+			if (req.params.item) {
+				value = {
+					type: 'menu',
+					tag: req.params.item
 				}
-				utils.rendering(req.headers.host, 'menu', data, req.session.info, req.session.lang, {}, function callback(layout) {
-					res.end(layout);
-				});
 			} else {
-				var data = {
-					form: {form_menulist: false},
-					data_menulist: results
-				};
-				utils.rendering(req.headers.host, 'menu', data, req.session.info, req.session.lang, {}, function callback(layout) {
-					res.end(layout);
-				});
+				value = {
+					type: 'menu'
+				}
 			}
-		});
+			var menu_find = new ModelsBase(req.headers.host);
+			menu_find.find(value, function callback(results) {
+				if (req.params.operation === "edit") {
+
+					var data = {
+						type: 'edit',
+						pathvalue: results[0].path,
+						itemvalue: results[0].item,
+						position: results[0].position,
+						acl: results[0].acl
+					}
+					utils.rendering(req.headers.host, 'menu', data, req.session.info, req.session.lang, {}, function callback(layout) {
+						res.end(layout);
+					});
+				} else {
+					var data = {
+						form: {form_menulist: false},
+						data_menulist_new: true,
+						data_menulist: results
+					};
+					utils.rendering(req.headers.host, 'menu', data, req.session.info, req.session.lang, {}, function callback(layout) {
+						res.end(layout);
+					});
+				}
+			});
+		}
 	} );
 	router.post('/menu', utils.restricted_module, utils.restricted, function (req, res) { 
 		var validator = new Validator();   
@@ -238,69 +316,110 @@ function route() {
 				res.end(layout);
 			});
 		} else {
-			var menu_update = new ModelsBase(req.headers.host);
-			var find = { 
-				type: 'menu',
-				path: req.body.pathvalue
-			};
-			var value = {
-				item: req.body.itemvalue,
-				position: req.body.position,
-				acl: req.body.acl
-			}				
-			menu_update.update(find, value, function callbacks(results) {
-               			var message = {
-              			       action: 'success',
-      			               reference: 'waitrefresh',
- 		                       value: ''
-		                };
-				var data = {
-					form: {form_submenu: false},
-				};
-				utils.rendering(req.headers.host, 'menu', data, req.session.info, req.session.lang, message, function callback(layout) {
-					res.end(layout);
-				});
+			if (req.body.type === "new") {
+				var menu_insert = new ModelsBase(req.headers.host);
+				var value = {
+					type: 'menu',
+					path: req.body.pathvalue,
+					item: req.body.itemvalue,
+					position: req.body.position,
+					acl: req.body.acl
+				}				
+				menu_insert.insert(value, function callbacks(results) {
+        	       			var message = {
+              				       action: 'success',
+      				               reference: 'waitrefresh',
+ 		                	       value: ''
+		         	       };
+					var data = {
+						form: {form_menulist: false},
+					};
+					utils.rendering(req.headers.host, 'menu', data, req.session.info, req.session.lang, message, function callback(layout) {
+						res.end(layout);
+					});
 
-			});			
+				});			
+
+			} else if (req.body.type === "edit") {
+
+				var menu_update = new ModelsBase(req.headers.host);
+				var find = { 
+					type: 'menu',
+					path: req.body.pathvalue
+				};
+				var value = {
+					item: req.body.itemvalue,
+					position: req.body.position,
+					acl: req.body.acl
+				}				
+				menu_update.update(find, value, function callbacks(results) {
+        	       			var message = {
+              				       action: 'success',
+      				               reference: 'waitrefresh',
+ 		                	       value: ''
+		         	       };
+					var data = {
+						form: {form_menulist: false},
+					};
+					utils.rendering(req.headers.host, 'menu', data, req.session.info, req.session.lang, message, function callback(layout) {
+						res.end(layout);
+					});
+
+				});			
+			}
 		}
 	} );
 
 	router.get('/submenu/:operation?/:item?', utils.restricted_module, utils.restricted, function (req, res) { 
-		var value = {};
-		if (req.params.item) {
-			value = {
-				type: 'submenu',
-				tag: req.params.item
-			}
-		} else {
-			value = {
-				type: 'submenu'
-			}
-		}
-		var submenu_find = new ModelsBase(req.headers.host);
-		submenu_find.find(value, function callback(results) {
-			if (req.params.operation == "edit") {
+		if (req.params.operation === "new") {
+			var data = { 
+				type: 'new'
+			};
 
-				var data = {
-					pathvalue: results[0].submenu_path,
-					itemvalue: results[0].submenu_item,
-					position: results[0].position,
-					parent_position: results[0].parent_position,
-					acl: results[0].acl
+			utils.rendering(req.headers.host, 'submenu', data, req.session.info, req.session.lang, {}, function callback(layout) {
+				res.end(layout);
+			});
+
+
+		} else {
+			var value = {};
+			if (req.params.item) {
+				value = {
+					type: 'submenu',
+					tag: req.params.item
 				}
-				utils.rendering(req.headers.host, 'submenu', data, req.session.info, req.session.lang, {}, function callback(layout) {
-					res.end(layout);
-				});
 			} else {
-				var data = {
-					form: {form_submenulist: false},
-					data_submenulist: results
-				};
-				utils.rendering(req.headers.host, 'submenu', data, req.session.info, req.session.lang, {}, function callback(layout) {
-					res.end(layout);
-				});
+				value = {
+					type: 'submenu'
+				}
 			}
-		});
+			var submenu_find = new ModelsBase(req.headers.host);
+			submenu_find.find(value, function callback(results) {
+				if (req.params.operation === "edit") {
+	
+					var data = {
+						type: 'edit',
+						pathvalue: results[0].submenu_path,
+						itemvalue: results[0].submenu_item,
+						position: results[0].position,
+						parent_position: results[0].parent_position,
+						acl: results[0].acl
+					}
+					utils.rendering(req.headers.host, 'submenu', data, req.session.info, req.session.lang, {}, function callback(layout) {
+						res.end(layout);
+					});
+				} else {
+					var data = {
+						form: {form_submenulist: false},
+						data_submenulist_new: true,
+						data_submenulist: results
+					};
+					utils.rendering(req.headers.host, 'submenu', data, req.session.info, req.session.lang, {}, function callback(layout) {
+						res.end(layout);
+					});
+				}
+			});
+		}
 	} );
 	router.post('/submenu', utils.restricted_module, utils.restricted, function (req, res) { 
 		var validator = new Validator();   
@@ -328,31 +447,62 @@ function route() {
 				res.end(layout);
 			});
 		} else {
-			var submenu_update = new ModelsBase(req.headers.host);
-			var find = { 
-				type: 'submenu',
-				submenu_path: req.body.pathvalue
-			};
-			var value = {
-				submenu_item: req.body.itemvalue,
-				position: req.body.position,
-				parent_position: req.body.parent_position,
-				acl: req.body.acl
-			}				
-			submenu_update.update(find, value, function callbacks(results) {
-               			var message = {
-              			       action: 'success',
-      			               reference: 'waitrefresh',
- 		                       value: ''
-		                };
-				var data = {
-					form: {form_submenu: false},
-				};
-				utils.rendering(req.headers.host, 'submenu', data, req.session.info, req.session.lang, message, function callback(layout) {
-					res.end(layout);
-				});
+			if (req.body.type === "new") {
+				var submenu_insert = new ModelsBase(req.headers.host);
+				var value = {
+					type: 'submenu',
+					submenu_path: req.body.pathvalue,
+					submenu_item: req.body.itemvalue,
+					position: req.body.position,
+					parent_position: req.body.parent_position,
+					acl: req.body.acl
+				};				
+				submenu_insert.insert(value, function callbacks(results) {
+        	       			var message = {
+              				       action: 'success',
+      				               reference: 'waitrefresh',
+ 		                	       value: ''
+		                	};
+					var data = {
+						form: {form_submenulist: false},
+						data_submenulist: results,
+						data_submenulist_new: true
+					};
+					utils.rendering(req.headers.host, 'submenu', data, req.session.info, req.session.lang, message, function callback(layout) {
+						res.end(layout);
+					});
 
-			});			
+				});			
+
+			} else if (req.body.type === "edit") {
+				var submenu_update = new ModelsBase(req.headers.host);
+				var find = { 
+					type: 'submenu',
+					submenu_path: req.body.pathvalue
+				};
+				var value = {
+					submenu_item: req.body.itemvalue,
+					position: req.body.position,
+					parent_position: req.body.parent_position,
+					acl: req.body.acl
+				};				
+				submenu_update.update(find, value, function callbacks(results) {
+        	       			var message = {
+              				       action: 'success',
+      				               reference: 'waitrefresh',
+ 		                	       value: ''
+		                	};
+					var data = {
+						form: {form_submenulist: false},
+						data_submenulist: results,
+						data_submenulist_new: true
+					};
+					utils.rendering(req.headers.host, 'submenu', data, req.session.info, req.session.lang, message, function callback(layout) {
+						res.end(layout);
+					});
+
+				});			
+			}
 		}
 	} );
 
@@ -393,7 +543,7 @@ function route() {
 		var data = {}, message = {};
 		if (req.params.operation === "new") {
 			var data = {
-				form: {form_language: true},
+				form: {form_language: true}
 			};
 			utils.rendering(req.headers.host, 'language', data, req.session.info, req.session.lang, message, function callback(layout) {
 				res.end(layout);
@@ -605,8 +755,9 @@ function route() {
 		}
 	} );
 
+
 // not language or similar for routing, to limit conflict with language route above
-	router.get('/locales/:value', function (req, res) {
+	router.get('/locales/:value?', function (req, res) {
 		req.session.lang = req.params.value;
 		res.writeHead(302, {
                 	'Location': '/'

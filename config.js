@@ -28,7 +28,7 @@ Config.prototype.Application = function(app) {
 
 // EXPORT THE PARAMS THAT USE THE APP
 Config.prototype.Params = {
-	// DEFAULT PATH TO IGNORE (leave first element empty)
+	// DEFAULT PATH TO IGNORE 
 	default_path: ['module', 'themes', 'maintenance', 'domains', 'content', 'language', 'menu', 'page', 'submenu'],
 	default_controller: ['base', 'user', 'proxy'],
 

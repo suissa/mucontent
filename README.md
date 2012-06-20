@@ -45,10 +45,18 @@ Admin could see everything and /login path haven't the maintenance function by d
 
 If you want add a parent without path use # as it.
 
+# STATIC PAGE
+
+Add a page into Admin->Page, go into Admin->Menu (or SubMenu) and link the page, then in Admin->Theme, under {{staticcontent}} put:
+`{{#content_pagename}}
+
+{{/content_pagename}}`
+Here you can put all your static HTML, or you can create a Content (Admin->Content) and put here your tag.   
+Note: on Admin->Content you can insert HTML.
+
 # MODULES
 
 - Blog: https://github.com/anddimario/mucontent-blog
-- Static Page: https://github.com/anddimario/mucontent-static-page
 
 # THANKS TO (for support and/or help)
 

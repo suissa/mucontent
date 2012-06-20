@@ -81,7 +81,8 @@
 				<div class='alert-box {{action}}'>{{message}} <a href'' class='close'>&times;</a></div>
 			{{/message}}
 
-<!-- THE DINAMIC CONTENT -->
+<!-- THE PAGE CONTENT -->
+	{{#staticcontent}}
 
 			{{#content_index}}
 
@@ -139,6 +140,7 @@
 
 			{{/content_404}}
 
+	{{/staticcontent}}
 
 <!-- THE FORMS -->
 			{{#form}}
@@ -159,9 +161,11 @@
 
 				{{#form_page}}
 					<form method='post' action='/page' class='nice'>
+						<input type='hidden' name='type' value='{{type}}'/>
 						<input type='text' name='method' class='input-text' placeholder='Method' value='{{method}}'/>
 						<input type='text' name='pathtitle' class='input-text' placeholder='PageTitle' value='{{pathtitle}}'/>
 						<input type='text' name='formoption' class='input-text' placeholder='FormOption' value='{{formoption}}'/>
+						<input type='text' name='contentoption' class='input-text' placeholder='Content Options' value='{{contentoption}}'/>
 						<input type='text' name='headeroption' class='input-text' placeholder='Header' value='{{headeroption}}'/>
 						<input type='text' name='revealoption' class='input-text' placeholder='RevealOption' value='{{revealoption}}'/>
 						<input type='text' name='sidebaroption' class='input-text' placeholder='SideBarOption' value='{{sidebaroption}}'/>
@@ -172,6 +176,7 @@
 
 				{{#form_menulist}}
 					<form method='post' action='/menu' class='nice'>
+						<input type='hidden' name='type' value='{{type}}'/>
 						<input type='text' name='pathvalue' class='input-text' placeholder='Path' value='{{pathvalue}}'/>
 						<input type='text' name='itemvalue' class='input-text' placeholder='Item' value='{{itemvalue}}'/>
 						<input type='text' name='position' class='input-text' placeholder='Position' value='{{position}}'/>
@@ -182,6 +187,7 @@
 
 				{{#form_submenulist}}
 					<form method='post' action='/submenu' class='nice'>
+						<input type='hidden' name='type' value='{{type}}'/>
 						<input type='text' name='pathvalue' class='input-text' placeholder='Path' value='{{pathvalue}}'/>
 						<input type='text' name='itemvalue' class='input-text' placeholder='Item' value='{{itemvalue}}'/>
 						<input type='text' name='position' class='input-text' placeholder='Position' value='{{position}}'/>
@@ -254,6 +260,9 @@
 				{{/restricted}}
 			{{/data_user}}
 
+			{{#data_page_new}}
+				<a href='/page/new'>New Page</a><br><br> 
+			{{/data_page_new}}
 			{{#data_page}}
 				{{method}} -
 				{{pagetitle}} -
@@ -261,6 +270,9 @@
 				<a href='/page/edit/{{method}}'>edit</a><br>
 			{{/data_page}}
 
+			{{#data_menulist_new}}
+				<a href='/menu/new'>New Menu Item</a><br><br> 
+			{{/data_menulist_new}}
 			{{#data_menulist}}
 				{{path}} -
 				{{item}} -
@@ -269,6 +281,9 @@
 				<a href='/menu/edit/{{tag}}'>edit</a><br>
 			{{/data_menulist}}
 
+			{{#data_submenulist_new}}
+				<a href='/submenu/new'>New SubMenu Item</a><br><br> 
+			{{/data_submenulist_new}}
 			{{#data_submenulist}}
 				{{submenu_path}} -
 				{{submenu_item}} -
