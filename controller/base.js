@@ -3,6 +3,8 @@
 */
 
 var router = require('route66');
+// THIS SOLVED THE BUG ON ROUTE66: https://github.com/vdemedes/route66/issues/4
+router.autosort = false;
 var ModelsBase = require('../models/base.js');
 // REQUIRE CLASS TO MANAGE THE ERROR WITH ARRAY AND NOT CATCH
 var Validator = require('validator').Validator;
@@ -14,26 +16,6 @@ var Config = require('../config');
 var configuration = new Config();
 
 function route() {
-
-// THIS ROUTE IS USED TO GET STATIC PAGE FROM DB OR SEND A 404 OR HOME PAGE
-	router.get('/:staticpage?', utils.maintenance, utils.restricted, function (req, res) {
-console.log(req.params.staticpage);
-		var information = cache.get(req.headers.host), find = false;
-		information.forEach( function (row) {
-			if ((row.type === "page") && (row.method === req.params.staticpage)) {
-				find = true;
-				utils.rendering(req.headers.host, req.params.staticpage, {}, req.session.info, req.session.lang, {}, function callback(layout) {
-					res.end(layout);
-				});
-			}
-		});
-		if (!find && req.params.staticpage) {
-			utils.rendering(req.headers.host, '404', {}, req.session.info, req.session.lang, {}, function callback(layout) {
-				res.end(layout);
-			});
-		}
-
-	} );
 
 	router.get('/', utils.maintenance, function (req, res) {
 		//set language to default
@@ -773,6 +755,25 @@ console.log(req.params.staticpage);
 	router.get('/status', function (req, res) {
 		res.writeHead(200, "Content-type: text/html");
 		res.end("HI");
+	} );
+
+// THIS ROUTE IS USED TO GET STATIC PAGE FROM DB OR SEND A 404 OR HOME PAGE
+	router.get('/:staticpage?', utils.maintenance, utils.restricted, function (req, res) {
+		var information = cache.get(req.headers.host), find = false;
+		information.forEach( function (row) {
+			if ((row.type === "page") && (row.method === req.params.staticpage)) {
+				find = true;
+				utils.rendering(req.headers.host, req.params.staticpage, {}, req.session.info, req.session.lang, {}, function callback(layout) {
+					res.end(layout);
+				});
+			}
+		});
+		if (!find && req.params.staticpage) {
+			utils.rendering(req.headers.host, '404', {}, req.session.info, req.session.lang, {}, function callback(layout) {
+				res.end(layout);
+			});
+		}
+
 	} );
 
 }

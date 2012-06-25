@@ -85,7 +85,7 @@ function route() {
 				name: req.body.name, 
 				password: shasum.digest('hex')
 			};
-			user_login.login(value, function callbacks(results) {
+			user_login.find(value, function callbacks(results) {
 				// CHECK ON DATABASE AND ENSURE THAT USER IS IN, THEN LOGIN
 				if (results.length != 0) {
 					req.session.info = {

@@ -29,22 +29,6 @@ ModelsUser.prototype.find = function(value, callback) {
 	});
 };
 
-ModelsUser.prototype.login = function(value, callback) {
-	var self = this;
-	this.db.open( function (error, client) {
-		if (error) throw error;
-		collection = new mongodb.Collection(client, 'user');
-		collection.find({name: value.name, password: value.password}).toArray( function (err, objects) {
-			if (err) {
-				utils.quicklog(err.message);
-			} else {
-				callback(objects);
-			}
-			self.serverMongo.close();
-		});
-	});
-};
-
 ModelsUser.prototype.insert = function (value, callback) {
 	var self = this;
 	this.db.open( function (error, client) {
