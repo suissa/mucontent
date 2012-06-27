@@ -1,5 +1,5 @@
 /* MuContent - PROXY DEFINITION
-	Manage the balancer and the multisite
+	Manage balancer, high availability and multisite
 */
 
 // REQUIREMENTS
@@ -7,6 +7,7 @@ var http = require('http');
 var utils = require('./lib/utils');
 var cache = require('./lib/cache');
 var Config = require('./config');
+var exec = require('child_process').exec;
 
 var configuration = new Config();
 
@@ -14,6 +15,14 @@ var configuration = new Config();
 var Server = function () {};
 
 Server.prototype.start = function () {
+
+	// See if is set the heatbeat command to manage the specific ip
+	if (configuration.Params.network_configuration_command) {
+		// configure the network shared ip
+		exec(configuration.Params.network_configuration_command, function (stderr, stdout, stdin) {
+			utils.quicklog('Network shared ip configuration ', stderr, stdout);
+		});
+	}
 	http.createServer(this.proxy).listen(80, configuration.Params.heartbeat_ip);
 	utils.quicklog("Start server");
 }
@@ -50,25 +59,19 @@ Server.prototype.proxy = function (request, response) {
 	
 	// choose the client for balancing (balancing type: round robin)
 	var appserver_list = cache.get('appserver_list');
-	var balancer = cache.get('balancer'), last_client;
+	var choosed_client = cache.get('last_client');
 
-	//get last client used in balancing
-	if (cache.get('last_client')) {
-		last_client = cache.get('last_client');
-	} else {
-		cache.put('last_client', 0);
-	}
+	var next_client = appserver_list[choosed_client];
 
-	var next_client = appserver_list[last_client+1];
-
-	if (last_client >= appserver_list.length) {
+	if ((choosed_client == appserver_list.length-1) || (appserver_list.length == 1)) {
 		cache.put('last_client', 0);
 	} else {
-		cache.put('last_client', last_client+1);
+		cache.put('last_client', choosed_client+1);
 	}
 
+console.log(next_client, choosed_client, appserver_list.length)
 	var options = {host: next_client, port: 8080, method: request.method, path: request.url, headers: request.headers}
-
+console.log(options);
 	var proxy_request = http.request(options, function (proxy_response) {
 	   	proxy_response.on('data', function(chunk) {
       			response.write(chunk, 'binary');

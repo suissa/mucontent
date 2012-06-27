@@ -1,4 +1,4 @@
-MuContent is a multisite and multilanguage cms in Javascript (Node.js) written with a central proxy for balancing the request on multiple client. Based on MongoDB for storage all content. Themes are based on Foundation framework and mustache.   
+MuContent is a multisite, scalable and multilanguage cms written in Javascript (Node.js). Written with a central proxy for balancing the request on multiple client on cluster or cloud based architecture. It uses MongoDB for storage all content and for its scalable features. Themes are based on Foundation framework and mustache.   
 Google Group: http://groups.google.com/group/mucontent
 
 # INSTALLATION

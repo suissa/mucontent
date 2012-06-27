@@ -10,6 +10,10 @@ var health = require('./lib/health');
 var cache = require('./lib/cache');
 var utils = require('./lib/utils');
 var cluster = require('cluster');
+var Config = require('./config');
+var http = require('http');
+
+var configuration = new Config();
 
 var numCPUs = require('os').cpus().length;
 
@@ -30,9 +34,31 @@ if (cluster.isMaster) {
 	});
 
 } else {
-	// START PROXY
-	var proxy = new Proxy();
-	proxy.start();
+        // See if is set the heatbeat command to manage the specific ip
+        if (configuration.Params.network_configuration_command) {
+console.log("ciao")
+		// chek if there is a master proxy, if not run a proxy
+	       	var options = {
+                        host: configuration.Params.heartbeat_ip,
+                        port: 80,
+                        method: 'GET',
+                        path: '/status'
+                }
+
+                var request = http.request(options, function (res) {
+                        utils.quicklog("Check master proxy " + options.host + " status: " + res.statusCode);
+                });
+                request.on('error', function(error) {
+
+			// START PROXY
+			var proxy = new Proxy();
+			proxy.start();
+		});
+	} else {
+		// START PROXY
+		var proxy = new Proxy();
+		proxy.start();
+	}
 	// START CLIENT
 	client.start();
 }
@@ -42,7 +68,7 @@ health.domain_mapping(function callback(objects) {
 	// PUT IN CACHE
 	cache.put('domain', objects);
 });
-health.client_mapping(function callback(objects) {
+health.appserver_mapping(function callback(objects) {
 	// PUT IN CACHE
 	cache.put('appserver_list', objects);
 });
@@ -59,7 +85,7 @@ setInterval(function () {
 	});
 }, 45000);
 setInterval(function () {
-	health.client_mapping(function callback(objects) {
+	health.appserver_mapping(function callback(objects) {
 		// PUT IN CACHE
 		cache.put('appserver_list', objects);
 	});

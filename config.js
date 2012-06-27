@@ -18,7 +18,13 @@ Config.prototype.Application = function(app) {
 	app.use(connect.cookieParser("cadcsdafdafdsfdsafsa"));
 	app.use(connect.session({
 		cookie: {maxAge: 60000 * 20}, // 20 minutes
-		store: new mongoStore({db: 'proxy'})
+// SET THE DB PARAMS TO SHARE SESSION ON SAME DATABASE
+		store: new mongoStore({
+			host: this.Params.mongodb_ip,
+			port: this.Params.mongodb_port,
+			db: 'proxy', 
+			auto_reconnect: true
+		})
 		})
 	);
 
@@ -33,9 +39,12 @@ Config.prototype.Params = {
 	default_controller: ['base', 'user', 'proxy'],
 
 	// NETWORK INTERFACES
-	listen_interface: 'lo', // the interface where all client listen (localhost is default)
+	listen_client_interface: 'lo', // the interface where all client listen (localhost is default)
 	ip_protocol: 'IPv4', // the interface protocol	
-	heartbeat_ip: '0.0.0.0', // the ip that is shared by all server proxy and identified the master
+	heartbeat_ip: '0.0.0.0', // the ip that is shared by all server proxy and identified the master. default: 0.0.0.0 listen on internet, change it and network_configuration_command for special availability settings
+	// HIGH AVAILABILITY CONFIGURATION EXAMPLE ON LINUX
+//	heartbeat_ip: '10.0.3.98', 
+//	network_configuration_command: 'ifconfig eth0:1 10.0.3.98',
 
 	// DATABASE
 	// For replicasets see: https://github.com/mongodb/node-mongodb-native/blob/master/docs/replicaset.md	
