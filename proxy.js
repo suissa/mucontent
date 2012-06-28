@@ -69,9 +69,8 @@ Server.prototype.proxy = function (request, response) {
 		cache.put('last_client', choosed_client+1);
 	}
 
-console.log(next_client, choosed_client, appserver_list.length)
 	var options = {host: next_client, port: 8080, method: request.method, path: request.url, headers: request.headers}
-console.log(options);
+
 	var proxy_request = http.request(options, function (proxy_response) {
 	   	proxy_response.on('data', function(chunk) {
       			response.write(chunk, 'binary');

@@ -58,9 +58,65 @@ Note: on Admin->Content you can insert HTML.
 
 - Blog: https://github.com/anddimario/mucontent-blog
 
+# HIGH AVAILABILITY (cloud or cluster solution)
+
+Go on config.js and edit heartbeat_ip and network_configuration_command as the example.
+
+# MONIT: APPLICATION MONITOR
+
+You can use monit to monitor the app and, in cluster configuration, you must use it to deconfigure network interface on the lost master proxy.   
+Here a configuration example: 
+
+`#!monit
+set logfile /var/log/monit.log
+
+check process nodejs with pidfile "/var/run/mucontent.pid"
+    start program = "/sbin/start mucontent"
+    stop program  = "/sbin/stop mucontent"
+    if failed host X.X.X.X port 8080 protocol HTTP 
+        request /status
+        with timeout 10 seconds
+	then exec "/sbin/ifconfig eth0:1 down"`
+
+NOTE: X.X.X.X is the client's listening IP.
+
+# CREATE A SERVICE (UPSTART)
+
+Write this /etc/init/mucontent.conf:
+
+`#!upstart
+description "MuContent CMS"
+author      "Andrea Di Mario"
+
+start on startup
+stop on shutdown
+
+script
+	# Create Pid file for monitoring
+	echo $$ > /var/run/mucontent.pid
+	chdir /root/content
+	exec sudo -u username sh -c "/usr/local/bin/node app.js >> /var/log/mucontent.log 2>&1"
+	respawn
+end script
+
+pre-start script
+    echo "[`date -u +%Y-%m-%dT%T.%3NZ`] Starting MuContent CMS" >> /var/log/mucontent.log
+end script
+
+pre-stop script
+    rm /var/run/yourprogram.pid
+    echo "[`date -u +%Y-%m-%dT%T.%3NZ`] Stopping MuContent CMS" >> /var/log/mucontent.log
+end script
+
+respawn limit 3 60`
+
+Then, you can run: `start mucontent`, `status mucontent`, `restart mucontent` and `stop mucontent`
+
 # THANKS TO (for support and/or help)
 
 - vdemedes (Route66): https://github.com/vdemedes
+
+TESTED ON UBUNTU 12.04 (lxc virtualization) with NODE.JS 0.8
 
 ---------------------------------
 

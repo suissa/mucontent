@@ -26,8 +26,7 @@ if (cluster.isMaster) {
                 cluster.fork();
         }
 
-// in 7.8 no death but exit
-        cluster.on('death', function(worker) {
+        cluster.on('exit', function(worker) {
         	utils.quicklog('Worker ' + worker.pid + ' died. Restart...');
 		// refork the process if one death
 		cluster.fork();
@@ -36,8 +35,7 @@ if (cluster.isMaster) {
 } else {
         // See if is set the heatbeat command to manage the specific ip
         if (configuration.Params.network_configuration_command) {
-console.log("ciao")
-		// chek if there is a master proxy, if not run a proxy
+		// check if there is a master proxy, if not run a proxy
 	       	var options = {
                         host: configuration.Params.heartbeat_ip,
                         port: 80,
