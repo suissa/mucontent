@@ -64,7 +64,7 @@ function start() {
 				});
 			});
 		});
-	}, 15000);
+	}, configuration.Params.health_information_mapping);
 
 	// INCLUDE START APP
 	health.get_interface(function callback (interface) {

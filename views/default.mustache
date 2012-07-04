@@ -1,48 +1,49 @@
 <html>
 <head>
-	<script src='/javascripts/jquery.min.js' type='text/javascript'></script>
-	<script src='/javascripts/foundation.js' type='text/javascript'></script>
-	<script src='/javascripts/app.js' type='text/javascript'></script>
-	<script src='/javascripts/modernizr.foundation.js' type='text/javascript'></script>
-	<link rel='stylesheet' type='text/css' href='/stylesheets/foundation.css'>
-	<link rel='stylesheet' type='text/css' href='/stylesheets/app.css'>
+  	<meta charset="utf-8" />
+
+<!-- Set the viewport width to device width for mobile -->
+  	<meta name="viewport" content="width=device-width" />
 
 	<title> {{pagetitle}} </title>
 
+<!-- Included CSS Files -->
+  	<link rel="stylesheet" href="/stylesheets/foundation.css">
+  	<link rel="stylesheet" href="/stylesheets/app.css">
+
+<!--[if lt IE 9]>
+    	<link rel="stylesheet" href="/stylesheets/ie.css">
+<![endif]-->
+
+  	<script src="/javascripts/modernizr.foundation.js"></script>
+
+<!-- IE Fix for HTML5 Tags -->
+<!--[if lt IE 9]>
+    	<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
 </head>
 <body>
-	{{#reveal}}
-	<!-- window reveal for foundation -->
-		<div id='modale' class='reveal-modal'>
-       			<h1>Title</h1>
-       			<p>Text in reveal modal windows</p>
-       			<a class='close-reveal-modal'>x</a>
-    		</div>
-	{{/reveal}}
 
 	{{#header}}
-	<div class='container'>
 
-		<div class='row'>
+	<div class='row'>
 <!-- LEFT COLUMNS -->
-			<div class='eight columns'>
-			MUCONTENT
+		<div class='eight columns'>
+		MUCONTENT
+		</div>
 
-			</div>
-
-			<div class='four columns'>
-				<ul class='nav-bar'>
-					<li class='has-flyout'>
-					<a href='#' class='main'>Language Choose</a>
-					<a href='#' class='flyout-toggle'><span></span></a>
-						<div class='flyout small'>
-						{{#languages}}
-							<a href='/locales/{{lang_id}}'>{{lang_name}}</a>
-						{{/languages}}		
-						</div>
-					</li>
-				</ul>
-			</div>
+		<div class='four columns'>
+		{{#more_language}}
+				<label for='customDropdown'>Language</label>
+				<form action='/locales' method='POST' name='selectlang'>
+				<select onchange='selectlang.submit()' name='choosed_lang'>
+					{{#languages}}
+						<option value='{{lang_id}}'>{{lang_name}}</option>
+					{{/languages}}		
+				</select>
+				</form>
+		{{/more_language}}
 		</div>
 	</div>
 
@@ -55,11 +56,11 @@
 				{{/is_parent}}
 				{{#is_parent}}
 				<li class='has-flyout'><a href='{{path}}' class='main'> {{item}} </a>
-						<div class='flyout small'>
+						<ul class='flyout small'>
 			        			{{#submenu}}
-							<a href='{{submenu_path}}' class='main'> {{submenu_item}} </a>
+							<li><a href='{{submenu_path}}' class='main'> {{submenu_item}} </a></li>
 							{{/submenu}}
-						</div>
+						</ul>
 				</li>
 				{{/is_parent}}
 			{{/menu}}
@@ -67,281 +68,295 @@
 		</ul>
 	{{/header}}
 
-
-	<div class='container'>
-
-		<div class='row'>
+	<div class='row'>
 <!-- LEFT COLUMNS -->
-			<div class='eight columns'>
-				<h1>{{pagetitle}}</h1>
+		<div class='eight columns'>
+			<h1>{{pagetitle}}</h1>
 
 <!-- THE MESSAGE -->
 
-			{{#message}}			
-				<div class='alert-box {{action}}'>{{message}} <a href'' class='close'>&times;</a></div>
-			{{/message}}
+		{{#message}}			
+			<div class='alert-box {{action}}'>{{message}} <a href'' class='close'>&times;</a></div>
+		{{/message}}
 
 <!-- THE PAGE CONTENT -->
 	{{#staticcontent}}
 
-			{{#content_index}}
+		{{#content_index}}
 
-			{{/content_index}}
+		{{/content_index}}
 
-			{{#content_login}}
+		{{#content_login}}
 
-			{{/content_login}}
+		{{/content_login}}
 
-			{{#content_registration}}
+		{{#content_registration}}
 
-			{{/content_registration}}
+		{{/content_registration}}
 
-			{{#content_user}}
+		{{#content_user}}
 
-			{{/content_user}}
+		{{/content_user}}
 
-			{{#content_module}}
+		{{#content_module}}
 
-			{{/content_module}}
+		{{/content_module}}
 
-			{{#content_page}}
+		{{#content_page}}
 
-			{{/content_page}}
+		{{/content_page}}
 
-			{{#content_menu}}
+		{{#content_menu}}
 
-			{{/content_menu}}
+		{{/content_menu}}
 
-			{{#content_submenu}}
+		{{#content_submenu}}
 
-			{{/content_submenu}}
+		{{/content_submenu}}
 
-			{{#content_themes}}
+		{{#content_themes}}
 
-			{{/content_themes}}
+		{{/content_themes}}
 
-			{{#content_language}}
+		{{#content_language}}
 
-			{{/content_language}}
+		{{/content_language}}
 
-			{{#content_content}}
+		{{#content_content}}
 
-			{{/content_content}}
+		{{/content_content}}
 
-			{{#content_maintenance}}
+		{{#content_maintenance}}
 
-			{{/content_maintenance}}
+		{{/content_maintenance}}
 
-			{{#content_domains}}
+		{{#content_domains}}
 
-			{{/content_domains}}
+		{{/content_domains}}
 
-			{{#content_404}}
+		{{#content_404}}
 
-			{{/content_404}}
+		{{/content_404}}
 
 	{{/staticcontent}}
 
 <!-- THE FORMS -->
-			{{#form}}
+	{{#form}}
 				
-				{{#form_user}}
-					<form method='post' action='/{{type}}' class='nice'>
-			    	 		<input type='text' name='name' class='input-text' placeholder='Nome' value='{{name}}'/>
-						{{#registration}}
-	     					<input type='text' name='email' class='input-text' placeholder='Email' value='{{email}}'/>
-						{{/registration}}
-						{{#restricted}}
-	     					<input type='text' name='role' class='input-text' placeholder='Role' value='{{role}}'/>
-						{{/restricted}}
-	     					<input type='password' name='password' class='input-text' placeholder='Password'/>
-	     					<input type='submit' value='Submit' class='small radius button'/>
-					</form>
-				{{/form_user}}
-
-				{{#form_page}}
-					<form method='post' action='/page' class='nice'>
-						<input type='hidden' name='type' value='{{type}}'/>
-						<input type='text' name='method' class='input-text' placeholder='Method' value='{{method}}'/>
-						<input type='text' name='pathtitle' class='input-text' placeholder='PageTitle' value='{{pathtitle}}'/>
-						<input type='text' name='formoption' class='input-text' placeholder='FormOption' value='{{formoption}}'/>
-						<input type='text' name='contentoption' class='input-text' placeholder='Content Options' value='{{contentoption}}'/>
-						<input type='text' name='headeroption' class='input-text' placeholder='Header' value='{{headeroption}}'/>
-						<input type='text' name='revealoption' class='input-text' placeholder='RevealOption' value='{{revealoption}}'/>
-						<input type='text' name='sidebaroption' class='input-text' placeholder='SideBarOption' value='{{sidebaroption}}'/>
-						<input type='text' name='footeroption' class='input-text' placeholder='FooterOption' value='{{footeroption}}'/>
-						<input type='submit' value='Submit' class='small radius button'/>
-					</form>
-				{{/form_page}}
-
-				{{#form_menulist}}
-					<form method='post' action='/menu' class='nice'>
-						<input type='hidden' name='type' value='{{type}}'/>
-						<input type='text' name='pathvalue' class='input-text' placeholder='Path' value='{{pathvalue}}'/>
-						<input type='text' name='itemvalue' class='input-text' placeholder='Item' value='{{itemvalue}}'/>
-						<input type='text' name='position' class='input-text' placeholder='Position' value='{{position}}'/>
-						<input type='text' name='acl' class='input-text' placeholder='Acl' value='{{acl}}'/>
-						<input type='submit' value='Submit' class='small radius button'/>
-					</form>
-				{{/form_menulist}}
-
-				{{#form_submenulist}}
-					<form method='post' action='/submenu' class='nice'>
-						<input type='hidden' name='type' value='{{type}}'/>
-						<input type='text' name='pathvalue' class='input-text' placeholder='Path' value='{{pathvalue}}'/>
-						<input type='text' name='itemvalue' class='input-text' placeholder='Item' value='{{itemvalue}}'/>
-						<input type='text' name='position' class='input-text' placeholder='Position' value='{{position}}'/>
-						<input type='text' name='parent_position' class='input-text' placeholder='Position' value='{{parent_position}}'/>
-						<input type='text' name='acl' class='input-text' placeholder='Acl' value='{{acl}}'/>
-						<input type='submit' value='Submit' class='small radius button'/>
-					</form>
-				{{/form_submenulist}}
-
-				{{#form_language}}
-					<form method='post' action='/language' class='nice'>
-						<input type='text' name='lang_id' class='input-text' placeholder='Language Id' value='{{lang_id}}'/>
-						<input type='text' name='lang_name' class='input-text' placeholder='Language Name' value='{{lang_name}}'/>
-						<input type='submit' value='Submit' class='small radius button'/>
-					</form>
-				{{/form_language}}
-
-				{{#form_content}}
-					<form method='post' action='/content' class='nice'>
-						<input type='hidden' name='operation' value='{{operation}}'/>
-						<input type='text' name='type' class='input-text' placeholder='Content Type (message or content)' value='{{type}}'/>
-						<input type='text' name='tag' class='input-text' placeholder='Content Tag' value='{{tag}}'/>
-						<input type='text' name='lang_id' class='input-text' placeholder='Language Id' value='{{lang_id}}'/>
-						<textarea name='text' class='input-text' placeholder='Text'/></textarea>
-						<input type='submit' value='Submit' class='small radius button'/>
-					</form>
-				{{/form_content}}
-
-				{{#form_maintenance}}
-					<form method='post' action='/maintenance' class='nice'>
-						<input type='checkbox' name='maintenance' value='{{value}}' {{checked}} />
-					     	<input type='submit' value='Submit' class='small radius button'/>
-					</form>
-
-				{{/form_maintenance}}
-
-				{{#form_themes}}
-					<form method='post' action='/themes' class='nice'>
-						<textarea name='content' class='expand input-text' rows='100' placeholder='Content' />{{content}}</textarea>
-					     	<input type='submit' value='Submit' class='small radius button'/>
-					</form>
-
-				{{/form_themes}}
-
-				{{#form_domains}}
-					<form method='post' action='/domains' class='nice'>
-						<textarea name='content' class='input-text' placeholder='Content' />{{content}}</textarea>
-					     	<input type='submit' value='Submit' class='small radius button'/>
-					</form>
-
-				{{/form_domains}}
-
-
-			{{/form}}
-
-			{{#data_user_new}}
+		{{#form_user}}
+			<form method='post' action='/{{type}}' class='nice'>
+	    	 		<input type='text' name='name' placeholder='Nome' value='{{name}}'/>
+				{{#registration}}
+				<input type='text' name='email'' placeholder='Email' value='{{email}}'/>
+				{{/registration}}
 				{{#restricted}}
-				<a href='/registration'>New User</a><br><br> 
+				<input type='text' name='role' placeholder='Role' value='{{role}}'/>
 				{{/restricted}}
-			{{/data_user_new}}
-			{{#data_user}}
-				{{name}} -
-				{{email}} -
-				{{password}}  
-				{{#user_edit}}
-				<a href='/user/edit/{{name}}'>edit</a>
-				{{/user_edit}}
-				{{#restricted}}
-				<a href='/user/delete/{{name}}'>delete</a><br>
-				{{/restricted}}
-			{{/data_user}}
+	 			<input type='password' name='password' placeholder='Password'/>
+				<input type='submit' value='Submit' class='small radius button'/>
+			</form>
+		{{/form_user}}
 
-			{{#data_page_new}}
-				<a href='/page/new'>New Page</a><br><br> 
-			{{/data_page_new}}
-			{{#data_page}}
-				{{method}} -
-				{{pagetitle}} -
-				{{form}}  
-				<a href='/page/edit/{{method}}'>edit</a><br>
-			{{/data_page}}
+		{{#form_page}}
+			<form method='post' action='/page' class='nice'>
+				<input type='hidden' name='type' value='{{type}}'/>
+				<input type='text' name='method' placeholder='Method' value='{{method}}'/>
+				<input type='text' name='pathtitle' placeholder='PageTitle' value='{{pathtitle}}'/>
+				<input type='text' name='formoption' placeholder='FormOption' value='{{formoption}}'/>
+				<input type='text' name='contentoption' placeholder='Content Options' value='{{contentoption}}'/>
+				<input type='text' name='headeroption' placeholder='Header' value='{{headeroption}}'/>
+				<input type='text' name='revealoption' placeholder='RevealOption' value='{{revealoption}}'/>
+				<input type='text' name='sidebaroption' placeholder='SideBarOption' value='{{sidebaroption}}'/>
+				<input type='text' name='footeroption' placeholder='FooterOption' value='{{footeroption}}'/>
+				<input type='submit' value='Submit' class='small radius button'/>
+			</form>
+		{{/form_page}}
 
-			{{#data_menulist_new}}
-				<a href='/menu/new'>New Menu Item</a><br><br> 
-			{{/data_menulist_new}}
-			{{#data_menulist}}
-				{{path}} -
-				{{item}} -
-				{{position}} -
-				{{acl}}  
-				<a href='/menu/edit/{{tag}}'>edit</a><br>
-			{{/data_menulist}}
+		{{#form_menulist}}
+			<form method='post' action='/menu' class='nice'>
+				<input type='hidden' name='type' value='{{type}}'/>
+				<input type='text' name='pathvalue' placeholder='Path' value='{{pathvalue}}'/>
+				<input type='text' name='itemvalue' placeholder='Item' value='{{itemvalue}}'/>
+				<input type='text' name='position' placeholder='Position' value='{{position}}'/>
+				<input type='text' name='acl' placeholder='Acl' value='{{acl}}'/>
+				<input type='submit' value='Submit' class='small radius button'/>
+			</form>
+		{{/form_menulist}}
 
-			{{#data_submenulist_new}}
-				<a href='/submenu/new'>New SubMenu Item</a><br><br> 
-			{{/data_submenulist_new}}
-			{{#data_submenulist}}
-				{{submenu_path}} -
-				{{submenu_item}} -
-				{{position}} -
-				{{parent_position}} -
-				{{acl}}  
-				<a href='/submenu/edit/{{tag}}'>edit</a><br>
-			{{/data_submenulist}}
+		{{#form_submenulist}}
+			<form method='post' action='/submenu' class='nice'>
+				<input type='hidden' name='type' value='{{type}}'/>
+				<input type='text' name='pathvalue' placeholder='Path' value='{{pathvalue}}'/>
+				<input type='text' name='itemvalue' placeholder='Item' value='{{itemvalue}}'/>
+				<input type='text' name='position' placeholder='Position' value='{{position}}'/>
+				<input type='text' name='parent_position' placeholder='Position' value='{{parent_position}}'/>
+				<input type='text' name='acl' placeholder='Acl' value='{{acl}}'/>
+				<input type='submit' value='Submit' class='small radius button'/>
+			</form>
+		{{/form_submenulist}}
 
-			{{#data_themes}}
-				{{field}} : {{value}}
-			{{/data_themes}}
+		{{#form_language}}
+			<form method='post' action='/language' class='nice'>
+				<input type='text' name='lang_id' placeholder='Language Id' value='{{lang_id}}'/>
+				<input type='text' name='lang_name' placeholder='Language Name' value='{{lang_name}}'/>
+				<input type='submit' value='Submit' class='small radius button'/>
+			</form>
+		{{/form_language}}
 
-			{{#data_language_new}}
-				<a href='/language/new'>New Language</a><br><br> 
-			{{/data_language_new}}
-			{{#data_language}}
-				{{lang_id}} - 
-				{{lang_name}}
-				<a href='/language/delete/{{lang_id}}'>delete</a><br>
-			{{/data_language}}
+		{{#form_content}}
+			<form method='post' action='/content' class='nice'>
+				<input type='hidden' name='operation' value='{{operation}}'/>
+				<input type='text' name='type' placeholder='Content Type (message or content)' value='{{type}}'/>
+				<input type='text' name='tag' placeholder='Content Tag' value='{{tag}}'/>
+				<input type='text' name='lang_id' placeholder='Language Id' value='{{lang_id}}'/>
+				<textarea name='text' placeholder='Text'/></textarea>
+				<input type='submit' value='Submit' class='small radius button'/>
+			</form>
+		{{/form_content}}
 
-			{{#data_content_new}}
-				<a href='/content/new'>New content</a><br><br> 
-			{{/data_content_new}}
-			{{#data_content}}
-				{{type}} - 
-				{{tag}} - 
-				{{lang_id}} - 
-				{{text}}
-				<a href='/content/edit/{{type}}/{{tag}}/{{lang_id}}'>edit</a> 
-				<a href='/content/delete/{{type}}/{{tag}}/{{lang_id}}'>delete</a><br>
-			{{/data_content}}
+		{{#form_maintenance}}
+			<form method='post' action='/maintenance' class='nice'>
+				<input type='checkbox' name='maintenance' value='{{value}}' {{checked}} />
+			     	<input type='submit' value='Submit' class='small radius button'/>
+			</form>
+		{{/form_maintenance}}
 
-			{{#data_modules}}
-				{{value}} - <a href='/{{value}}/install/{{status}}'>{{status}}</a> <br>  
-			{{/data_modules}}
+		{{#form_themes}}
+			<form method='post' action='/themes' class='nice'>
+				<textarea name='content' rows='100' placeholder='Content' />{{content}}</textarea>
+			     	<input type='submit' value='Submit' class='small radius button'/>
+			</form>
+			{{/form_themes}}
 
-			</div>
+		{{#form_domains}}
+			<form method='post' action='/domains' class='nice'>
+				<textarea name='content' placeholder='Content' />{{content}}</textarea>
+			     	<input type='submit' value='Submit' class='small radius button'/>
+			</form>
+		{{/form_domains}}
+
+
+	{{/form}}
+
+	{{#data_user_new}}
+		{{#restricted}}
+		<a href='/registration'>New User</a><br><br> 
+		{{/restricted}}
+	{{/data_user_new}}
+	{{#data_user}}
+		{{name}} -
+		{{email}} -
+		{{password}}  
+		{{#user_edit}}
+		<a href='/user/edit/{{name}}'>edit</a>
+		{{/user_edit}}
+		{{#restricted}}
+		<a href='/user/delete/{{name}}'>delete</a><br>
+		{{/restricted}}
+	{{/data_user}}
+
+	{{#data_page_new}}
+		<a href='/page/new'>New Page</a><br><br> 
+	{{/data_page_new}}
+	{{#data_page}}
+		{{method}} -
+		{{pagetitle}} -
+		{{form}}  
+		<a href='/page/edit/{{method}}'>edit</a><br>
+	{{/data_page}}
+
+	{{#data_menulist_new}}
+		<a href='/menu/new'>New Menu Item</a><br><br> 
+	{{/data_menulist_new}}
+	{{#data_menulist}}
+		{{path}} -
+	 	{{item}} -
+		{{position}} -
+		{{acl}}  
+		<a href='/menu/edit/{{tag}}'>edit</a><br>
+	{{/data_menulist}}
+
+	{{#data_submenulist_new}}
+		<a href='/submenu/new'>New SubMenu Item</a><br><br> 
+	{{/data_submenulist_new}}
+	{{#data_submenulist}}
+		{{submenu_path}} -
+		{{submenu_item}} -
+		{{position}} -
+		{{parent_position}} -
+		{{acl}}  
+		<a href='/submenu/edit/{{tag}}'>edit</a><br>
+	{{/data_submenulist}}
+
+	{{#data_themes}}
+		{{field}} : {{value}}
+	{{/data_themes}}
+
+	{{#data_language_new}}
+		<a href='/language/new'>New Language</a><br><br> 
+	{{/data_language_new}}
+	{{#data_language}}
+		{{lang_id}} - 
+		{{lang_name}}
+		<a href='/language/delete/{{lang_id}}'>delete</a><br>
+	{{/data_language}}
+
+	{{#data_content_new}}
+		<a href='/content/new'>New content</a><br><br> 
+	{{/data_content_new}}
+	{{#data_content}}
+		{{type}} - 
+		{{tag}} - 
+		{{lang_id}} - 
+		{{text}}
+		<a href='/content/edit/{{type}}/{{tag}}/{{lang_id}}'>edit</a> 
+		<a href='/content/delete/{{type}}/{{tag}}/{{lang_id}}'>delete</a><br>
+	{{/data_content}}
+
+	{{#data_modules}}
+		{{value}} - <a href='/{{value}}/install/{{status}}'>{{status}}</a> <br>  
+	{{/data_modules}}
+
+	</div>
 
 <!-- RIGHT COLOUMS / SIDEBAR -->
 	{{#sidebar}}
-			<div class='four columns'>
-				<h1>SIDEBAR</h1>
+	<div class='four columns'>
+			<h1>SIDEBAR</h1>
 
-				{{#reveal}}
-	    				<a href='#' data-reveal-id='modale'>Click here to see modal windows </a>
-				{{/reveal}}
-			</div>
+			{{#reveal}}
+				<a href='#' data-reveal-id='modale'>Click here to see modal windows </a>
+			{{/reveal}}
 		</div>
-	{{/sidebar}}
 	</div>
-	
+	{{/sidebar}}
+
 
 <!-- FOOTER -->
 	{{#footer}}
 		<center>FOOTER HERE</center>
 	{{/footer}}
+
+
+<!-- Reveal window -->
+	{{#reveal}}
+	<!-- window reveal for foundation -->
+		<div id='modale' class='reveal-modal'>
+       			<h1>Title</h1>
+       			<p>Text in reveal modal windows</p>
+       			<a class='close-reveal-modal'>x</a>
+    		</div>
+	{{/reveal}}
+
+<!-- Included JS Files -->
+  	<script src="/javascripts/jquery.min.js"></script>
+  	<script src="/javascripts/jquery.reveal.js"></script>
+  	<script src="/javascripts/jquery.orbit-1.4.0.js"></script>
+  	<script src="/javascripts/jquery.customforms.js"></script>
+  	<script src="/javascripts/jquery.placeholder.min.js"></script>
+  	<script src="/javascripts/jquery.tooltips.js"></script>
+  	<script src="/javascripts/app.js"></script>
+
 </body>
 </html>
 

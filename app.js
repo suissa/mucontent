@@ -75,17 +75,18 @@ health.appserver_mapping(function callback(objects) {
 setInterval(function () {
       	health.check();
 // A LOT OF HEALTH CHECK WITH SMALL INTERVAL BLOCK THE APP
-}, 5000);
+}, configuration.Params.health_check);
 setInterval(function () {
 	health.domain_mapping(function callback(objects) {
 		// PUT IN CACHE
 		cache.put('domain', objects);
 	});
-}, 45000);
+}, configuration.Params.health_domain_mapping);
 setInterval(function () {
 	health.appserver_mapping(function callback(objects) {
 		// PUT IN CACHE
 		cache.put('appserver_list', objects);
 	});
-}, 10000);
+}, configuration.Params.health_appserver_mapping);
+
 

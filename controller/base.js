@@ -739,8 +739,9 @@ function route() {
 
 
 // not language or similar for routing, to limit conflict with language route above
-	router.get('/locales/:value?', function (req, res) {
-		req.session.lang = req.params.value;
+	router.post('/locales', function (req, res) {
+console.log(req.body.choosed_lang);
+		req.session.lang = req.body.choosed_lang;
 		res.writeHead(302, {
                 	'Location': '/'
                 });
