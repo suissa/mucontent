@@ -51,7 +51,8 @@ function route() {
 				value: req.session.info.name
 			};
 			var data = { 
-				form: false}
+				form: false
+			}
 			utils.rendering(req.headers.host, 'login', data, req.session.info, req.session.lang, message, function callback(layout) {
 				res.end(layout);
 			});
@@ -282,6 +283,7 @@ function route() {
 			var validator = new Validator();   
 			validator.check(req.body.name, 'name').notEmpty();
 			validator.check(req.body.email, 'email').isEmail();
+			validator.check(req.body.role, 'role').notEmpty();
 			validator.check(req.body.password, 'password').notEmpty();
 			var errors = validator.getErrors();
 			if (errors.length)
@@ -291,8 +293,11 @@ function route() {
 					reference: 'required',
 					value: errors
 				};
-				var data = { 
+				var data = {
+					form: {form_user: true, registration: true, restricted: true},
+					type: 'user',
 					name: req.body.name,
+					role: req.body.role,
 					email: req.body.email
 				};
 				utils.rendering(req.headers.host, 'user', data, req.session.info, req.session.lang, message, function callback(layout) {
@@ -300,12 +305,18 @@ function route() {
 				});
 			} else {
 				var user_edit = new ModelsUser(req.headers.host);
+				var shasum = crypto.createHash('sha1');
+				shasum.update(req.body.password);
+
+				var find = {
+					name: req.body.name 
+				}
 				var value = {
-					name: req.body.name, 
+					role: req.body.role,
 					email: req.body.email, 
-					password: req.body.password
+					password: shasum.digest('hex')
 				};
-				user_edit.update(value, function callbacks(results) {
+				user_edit.update(find, value, function callbacks(results) {
 					var data = {data_user: results};
 					utils.rendering(req.headers.host, 'user', data, req.session.info, req.session.lang, {}, function callback(layout) {
 						res.end(layout);
